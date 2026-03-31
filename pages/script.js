@@ -72,14 +72,7 @@ function validatePassword(input, errorId) {
   const allPassed = rules.every(rule => rule.test);
   input.dataset.valid = allPassed ? "true" : "false";
   
-   if (showRules) {
-    const listItems = rules.map(rule =>
-      `<li style="color:${rule.test ? 'green' : 'red'};">${rule.test ? '✅' : '❌'} ${rule.label}</li>`
-    ).join("");
-    error.innerHTML = `<ul>${listItems}</ul>`;
-  } else {
-    error.textContent = allPassed ? "" : "كلمة المرور غير مطابقة للمعايير";
-  }
+  
 
   const listItems = rules.map(rule =>
     `<li style="color:${rule.test ? 'green' : 'red'};">
