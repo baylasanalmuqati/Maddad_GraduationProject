@@ -10,8 +10,10 @@ from pathlib import Path
 from typing import Tuple
 
 import numpy as np
+import pandas as pd
+import xgboost as xgb
 
-from app.ml.train import AGE_GROUP_ENCODING, RISK_NAMES, classify_risk_rule_based
+from app.ml.train import RISK_NAMES, classify_risk_rule_based
 
 _MODEL_PATH = Path(__file__).parent / "model.pkl"
 _model = None
@@ -52,26 +54,35 @@ def predict(
     """
     model = _load_model()
 
-    skill_order = [
-        "response_to_name",
-        "eye_contact",
-        "social_smile",
-        "imitation",
-        "discrimination",
-        "pointing_with_finger",
-        "facial_expressions",
-        "joint_attention",
-        "play_skills",
-        "response_to_commands",
-    ]
+    # 1. Map Gender (0 for Female, 1 for Male based on training data)
+    gender_enc = 1 if gender == "ذكر" else 0
 
-    age_enc = AGE_GROUP_ENCODING.get(age_group, 1)
-    gender_enc = 0 if gender == "ذكر" else 1
-    skill_values = [int(answers.get(k, 0)) for k in skill_order]
+    # 2. Construct the exact feature dictionary expected by the XGBoost model
+    # Note: The Age columns use an en-dash '–' to match the training data exactly.
+    feature_dict = {
+        "Age_12–18 Months": [1 if age_group == "12-18" else 0],
+        "Age_19–24 Months": [1 if age_group == "19-24" else 0],
+        "Age_25–30 Months": [1 if age_group == "25-30" else 0],
+        "Age_31–36 Months": [1 if age_group == "31-36" else 0],
+        "Gender": [gender_enc],
+        "Response_to_Name": [int(answers.get("response_to_name", 0))],
+        "Eye_Contact": [int(answers.get("eye_contact", 0))],
+        "Social_Smile": [int(answers.get("social_smile", 0))],
+        "Imitation": [int(answers.get("imitation", 0))],
+        "Discrimination": [int(answers.get("discrimination", 0))],
+        "Pointing_with_Finger": [int(answers.get("pointing_with_finger", 0))],
+        "Facial_Expressions": [int(answers.get("facial_expressions", 0))],
+        "Joint_Attention": [int(answers.get("joint_attention", 0))],
+        "Play_Skills": [int(answers.get("play_skills", 0))],
+        "Response_to_Commands": [int(answers.get("response_to_commands", 0))]
+    }
 
-    features = np.array([[age_enc, gender_enc] + skill_values], dtype=np.int8)
-    label_idx = int(model.predict(features)[0])
-    proba = model.predict_proba(features)[0]
+    # 3. Convert to Pandas DataFrame (Maintains feature names for XGBoost)
+    features_df = pd.DataFrame(feature_dict)
+
+    # 4. Make prediction
+    label_idx = int(model.predict(features_df)[0])
+    proba = model.predict_proba(features_df)[0]
     confidence = float(proba[label_idx])
 
     return RISK_NAMES[label_idx], confidence
