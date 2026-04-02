@@ -84,10 +84,13 @@ class QuestionnaireSubmitRequest(BaseModel):
 
 
 class PredictionResult(BaseModel):
-    risk: Literal["low", "medium", "high"]
+    # CHANGED: Allow Title Case since the XGBoost model outputs "Low", "Medium", "High"
+    # I kept the lowercase ones too just in case your frontend accidentally sends them
+    risk: Literal["Low", "Medium", "High", "low", "medium", "high"]
     confidence: float
     score: int
-    rule_risk: Literal["low", "medium", "high"]
+    # CHANGED: Made this Optional and default to None since we no longer use rules
+    rule_risk: Optional[str] = None 
 
 
 class QuestionnaireSubmitResponse(BaseModel):
@@ -95,7 +98,6 @@ class QuestionnaireSubmitResponse(BaseModel):
     prediction: PredictionResult
     failed_skills: List[str]
     followup_needed: bool
-
 
 # ---------------------------------------------------------------------------
 # Followup
