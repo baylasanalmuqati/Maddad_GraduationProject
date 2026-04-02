@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models import QuestionnaireResult, User
-from app.ml.predictor import predict, rule_based_risk
+from app.ml.predictor import predict # CHANGED: Removed rule_based_risk import
 from app.routers.auth import _get_current_user
 from app.schemas import FollowupSubmitRequest, FollowupSubmitResponse, PredictionResult
 
@@ -49,17 +49,22 @@ def submit_followup(
         if k in original_answers
     }}
 
-    final_rule_risk, final_score = rule_based_risk(result.age_group, updated_answers)
+    # CHANGED: Manually calculate the final score by summing the updated values
+    final_score = sum(updated_answers.values())
 
+    # CHANGED: ML prediction ONLY. Raise a 500 error if the model is missing.
     try:
         ml_risk, ml_confidence = predict(result.age_group, result.gender, updated_answers)
     except FileNotFoundError:
-        ml_risk, ml_confidence = final_rule_risk, 1.0
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Machine learning model not found. Please ensure model.pkl is deployed."
+        )
 
     # Persist the refined result
     result.followup_answers = body.followup_answers
     result.final_score = final_score
-    result.final_risk = final_rule_risk
+    result.final_risk = ml_risk # CHANGED: Replaced final_rule_risk with ml_risk
     result.ml_risk = ml_risk
     result.ml_confidence = ml_confidence
     db.commit()
@@ -69,6 +74,6 @@ def submit_followup(
             risk=ml_risk,
             confidence=ml_confidence,
             score=final_score,
-            rule_risk=final_rule_risk,
+            rule_risk=None, # CHANGED: Set to None (Make sure PredictionResult schema allows this)
         )
     )
