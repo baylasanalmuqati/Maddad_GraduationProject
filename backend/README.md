@@ -41,7 +41,7 @@ cd backend
 python -m app.ml.train
 ```
 
-This generates `app/ml/model.pkl` – a Random Forest trained on synthetic data derived from the rule-based `classifyRisk()` function. Once real user data accumulates in the `questionnaire_results` table you can retrain on real assessments for improved accuracy.
+This generates `app/ml/model.pkl` – an XGBoost classifier (multi:softprob objective) trained on synthetic data derived from the rule-based `classifyRisk()` function. Once real user data accumulates in the `questionnaire_results` table you can retrain on real assessments for improved accuracy.
 
 ### 6. Start the API server
 
@@ -91,9 +91,9 @@ https://maddad-api.onrender.com
 
 ## ML Model
 
-The current model is a **Random Forest classifier** (200 trees) trained on synthetic data.
+The current model is an **XGBoost classifier** (`multi:softprob` objective, 200 estimators) trained on synthetic data.
 
-**Features (13):**
+**Features (12):**
 - Age group (encoded 1–4)
 - Gender (0 = ذكر, 1 = أنثى)
 - 10 skill answers (0 or 1 each)

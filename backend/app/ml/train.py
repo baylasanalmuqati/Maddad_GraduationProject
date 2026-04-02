@@ -1,10 +1,11 @@
 """
 Train the ASD risk prediction model and save it as a .pkl file.
 
-The model is a Random Forest classifier trained on synthetic data that is
-generated from the existing rule-based classifyRisk() function.  Once real
-user data has been collected via the /api/questionnaire/submit endpoint the
-model can be retrained on actual assessments to improve accuracy.
+The model is an XGBoost classifier (multi:softprob objective) trained on
+synthetic data that is generated from the existing rule-based classifyRisk()
+function.  Once real user data has been collected via the
+/api/questionnaire/submit endpoint the model can be retrained on actual
+assessments to improve accuracy.
 
 Run this script once before starting the server:
     python -m app.ml.train
@@ -17,7 +18,7 @@ import pickle
 from pathlib import Path
 
 import numpy as np
-from sklearn.ensemble import RandomForestClassifier
+from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 
@@ -123,12 +124,16 @@ def train_and_save(model_path: Path | None = None) -> None:
         X, y, test_size=0.2, random_state=42, stratify=y
     )
 
-    print("Training Random Forest …")
-    clf = RandomForestClassifier(
+    print("Training XGBoost classifier …")
+    clf = XGBClassifier(
+        objective="multi:softprob",
+        num_class=3,
         n_estimators=200,
-        max_depth=None,
-        min_samples_leaf=2,
-        class_weight="balanced",
+        max_depth=6,
+        learning_rate=0.1,
+        subsample=0.8,
+        colsample_bytree=0.8,
+        eval_metric="mlogloss",
         random_state=42,
         n_jobs=-1,
     )
