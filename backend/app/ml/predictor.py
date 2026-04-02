@@ -1,32 +1,28 @@
 """
 ML predictor: loads the trained model and exposes a predict() function.
-
-The model file (model.pkl) must exist before the server starts.
-Run the training script first:  python -m app.ml.train
+This script relies solely on the trained XGBoost model for predictions.
 """
 
 import pickle
 from pathlib import Path
 from typing import Tuple
 
-import numpy as np
 import pandas as pd
 import xgboost as xgb
 
-from app.ml.train import RISK_NAMES, classify_risk_rule_based
-
 _MODEL_PATH = Path(__file__).parent / "model.pkl"
 _model = None
+
+# LabelEncoder sorts labels alphabetically during training:
+# 0: 'High', 1: 'Low', 2: 'Medium'
+RISK_NAMES = ["High", "Low", "Medium"]
 
 
 def _load_model():
     global _model
     if _model is None:
         if not _MODEL_PATH.exists():
-            raise FileNotFoundError(
-                f"ML model not found at {_MODEL_PATH}. "
-                "Run `python -m app.ml.train` first."
-            )
+            raise FileNotFoundError(f"ML model not found at {_MODEL_PATH}.")
         with open(_MODEL_PATH, "rb") as f:
             _model = pickle.load(f)
     return _model
@@ -38,7 +34,8 @@ def predict(
     answers: dict,
 ) -> Tuple[str, float]:
     """
-    Predict the ASD risk level for a set of questionnaire answers.
+    Predict the ASD risk level for a set of questionnaire answers
+    using the trained XGBoost model.
 
     Parameters
     ----------
@@ -49,16 +46,15 @@ def predict(
     Returns
     -------
     (risk_label, confidence)
-      risk_label  : 'low' | 'medium' | 'high'
+      risk_label  : 'Low' | 'Medium' | 'High'
       confidence  : float in [0, 1] – max class probability
     """
     model = _load_model()
 
-    # 1. Map Gender (0 for Female, 1 for Male based on training data)
+    # 1. Map Gender (0 for Female, 1 for Male based on your training data)
     gender_enc = 1 if gender == "ذكر" else 0
 
     # 2. Construct the exact feature dictionary expected by the XGBoost model
-    # Note: The Age columns use an en-dash '–' to match the training data exactly.
     feature_dict = {
         "Age_12–18 Months": [1 if age_group == "12-18" else 0],
         "Age_19–24 Months": [1 if age_group == "19-24" else 0],
@@ -77,7 +73,7 @@ def predict(
         "Response_to_Commands": [int(answers.get("response_to_commands", 0))]
     }
 
-    # 3. Convert to Pandas DataFrame (Maintains feature names for XGBoost)
+    # 3. Convert to Pandas DataFrame
     features_df = pd.DataFrame(feature_dict)
 
     # 4. Make prediction
@@ -86,10 +82,3 @@ def predict(
     confidence = float(proba[label_idx])
 
     return RISK_NAMES[label_idx], confidence
-
-
-def rule_based_risk(age_group: str, answers: dict) -> Tuple[str, int]:
-    """Return (risk, score) using the deterministic rule-based classifier."""
-    score = sum(int(v) for v in answers.values())
-    risk = classify_risk_rule_based(age_group, score)
-    return risk, score
