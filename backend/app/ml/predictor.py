@@ -15,7 +15,7 @@ _model = None
 
 # LabelEncoder sorts labels alphabetically during training:
 # 0: 'High', 1: 'Low', 2: 'Medium'
-RISK_NAMES = ["High", "Low", "Medium"]
+RISK_NAMES = ["high", "low", "medium"]
 
 
 def _load_model():
