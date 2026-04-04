@@ -7,9 +7,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    # PostgreSQL connection URL, e.g.
+    # SQLite database file (default – no installation needed).
+    # The file maddad.db will be created automatically inside the backend/ folder.
+    # To use PostgreSQL instead, set this to:
     # postgresql://user:password@localhost:5432/maddad
-    DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/maddad"
+    DATABASE_URL: str = "sqlite:///./maddad.db"
 
     # Secret key used to sign JWT tokens – change this in production!
     SECRET_KEY: str = "change-me-in-production"

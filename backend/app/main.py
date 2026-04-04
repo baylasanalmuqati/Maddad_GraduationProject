@@ -2,16 +2,31 @@
 FastAPI application entry point.
 """
 
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
+from app.database import Base, engine
 from app.routers import auth, followup, profile, questionnaire
+
+# Import all models so SQLAlchemy registers them with Base.metadata
+import app.models  # noqa: F401
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Create all database tables on startup if they don't exist yet."""
+    Base.metadata.create_all(bind=engine)
+    yield
+
 
 app = FastAPI(
     title="Maddad API",
     description="Backend API for the Maddad ASD screening and child-development platform.",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 # ---------------------------------------------------------------------------

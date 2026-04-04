@@ -1,57 +1,128 @@
 # Maddad Backend
 
-FastAPI backend that provides authentication, profile management, ASD questionnaire assessment, and ML-powered risk prediction for the Maddad platform.
+FastAPI backend for the Maddad ASD-screening platform.  
+Uses **SQLite** by default — no database installation needed; everything is stored in a single file (`maddad.db`) that is created automatically the first time you start the server.
 
 ---
 
-## Quick Start (local development)
+## How to run (step by step)
 
-### 1. Prerequisites
+### Step 1 — Make sure Python is installed
 
-- Python 3.11+
-- A running PostgreSQL instance (local or cloud)
+Open a terminal / command prompt and type:
 
-### 2. Install dependencies
+```
+python --version
+```
 
-```bash
-cd backend
+You should see `Python 3.11` or higher.  
+If Python is not installed, download it from <https://www.python.org/downloads/> and install it.
+
+---
+
+### Step 2 — Open a terminal inside the `backend` folder
+
+```
+cd path/to/Maddad_GraduationProject/backend
+```
+
+Replace `path/to/Maddad_GraduationProject` with the actual location on your computer.
+
+---
+
+### Step 3 — (Recommended) Create a virtual environment
+
+This keeps the project's packages isolated from the rest of your system.
+
+```
+python -m venv venv
+```
+
+Then activate it:
+
+- **Windows:**  `venv\Scripts\activate`
+- **Mac / Linux:**  `source venv/bin/activate`
+
+You will see `(venv)` at the start of your terminal prompt when it is active.
+
+---
+
+### Step 4 — Install the required packages
+
+```
 pip install -r requirements.txt
 ```
 
-### 3. Configure environment variables
+This downloads all the libraries the backend needs.  
+It only needs to be done once (or again if `requirements.txt` changes).
 
-```bash
-cp .env.example .env
-# Edit .env with your database URL and secret key
+---
+
+### Step 5 — Create the environment file
+
+```
+cp .env.example .env        # Mac / Linux
+copy .env.example .env      # Windows
 ```
 
-### 4. Create the database schema
+Open `.env` in any text editor.  
+The default settings work out of the box — you do **not** need to change anything to run locally.
 
-```bash
-# Connect to your PostgreSQL instance and run:
-psql -U postgres -d maddad -f ../database/schema.sql
+---
+
+### Step 6 — Start the server
+
 ```
-
-### 5. Train the ML model
-
-This only needs to be done once (or whenever you want to retrain):
-
-```bash
-cd backend
-python -m app.ml.train
-```
-
-This generates `app/ml/model.pkl` – an XGBoost classifier (multi:softprob objective) trained on synthetic data derived from the rule-based `classifyRisk()` function. Once real user data accumulates in the `questionnaire_results` table you can retrain on real assessments for improved accuracy.
-
-### 6. Start the API server
-
-```bash
-cd backend
 uvicorn app.main:app --reload
 ```
 
-The API will be available at `http://localhost:8000`.  
-Interactive docs: `http://localhost:8000/docs`
+The first time this runs, it automatically creates `maddad.db` in the `backend` folder and sets up all the database tables. **You do not need to run any SQL scripts.**
+
+You should see output like:
+
+```
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+```
+
+---
+
+### Step 7 — Check that it works
+
+Open your browser and go to:
+
+```
+http://localhost:8000/health
+```
+
+You should see: `{"status": "ok"}`
+
+To explore all API endpoints interactively, go to:
+
+```
+http://localhost:8000/docs
+```
+
+---
+
+### Step 8 — Open the frontend
+
+Open `index.html` (in the root of the project, **not** inside `backend`) in your browser.  
+The frontend will automatically talk to the backend at `http://localhost:8000`.
+
+---
+
+## Stopping the server
+
+Press **Ctrl + C** in the terminal where the server is running.
+
+---
+
+## Where is the database?
+
+The database is stored in `backend/maddad.db`.  
+It is a plain file — you can copy it, delete it, or open it with [DB Browser for SQLite](https://sqlitebrowser.org/) to inspect the data.
+
+Deleting `maddad.db` and restarting the server will give you a fresh, empty database.
 
 ---
 
@@ -60,51 +131,35 @@ Interactive docs: `http://localhost:8000/docs`
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | `POST` | `/api/auth/register` | Parent signup |
-| `POST` | `/api/auth/login` | Login (returns JWT) |
-| `POST` | `/api/auth/logout` | Logout (client deletes token) |
+| `POST` | `/api/auth/login` | Login (returns JWT token) |
+| `POST` | `/api/auth/logout` | Logout (clears client token) |
 | `GET`  | `/api/profile` | Get current user's profile |
 | `PUT`  | `/api/profile` | Update profile |
 | `POST` | `/api/questionnaire/submit` | Submit 10-question assessment → ML prediction |
-| `GET`  | `/api/questionnaire/history` | Past assessments |
+| `GET`  | `/api/questionnaire/history` | Past assessments for current user |
 | `POST` | `/api/followup/submit` | Submit follow-up answers → refined prediction |
 
-All protected endpoints require an `Authorization: Bearer <token>` header.
-
----
-
-## Deployment
-
-### Render / Railway / Fly.io
-
-1. Set the environment variables in the platform's dashboard (same keys as `.env.example`).
-2. Use the `Procfile` to start the server: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
-3. Run the schema migration and ML training as one-off commands before the first deploy.
-
-### Frontend configuration
-
-Set `MADDAD_API_BASE` in `pages/api.js` to your deployed API URL, e.g.:
-```
-https://maddad-api.onrender.com
-```
+All protected endpoints require an `Authorization: Bearer <token>` header.  
+The token is returned by `/api/auth/register` and `/api/auth/login`.
 
 ---
 
 ## ML Model
 
-The current model is an **XGBoost classifier** (`multi:softprob` objective, 200 estimators) trained on synthetic data.
+The risk prediction uses a pre-trained **XGBoost** model (`app/ml/model.pkl`).  
+It classifies ASD screening results into three levels: `low` / `medium` / `high`.
 
-**Features (12):**
-- Age group (encoded 1–4)
-- Gender (0 = ذكر, 1 = أنثى)
-- 10 skill answers (0 or 1 each)
+---
 
-**Target (3 classes):** `low` / `medium` / `high`
+## Switching to PostgreSQL
 
-**Retraining on real data:**
+If you later want to use PostgreSQL instead of SQLite:
 
-Once you have real user submissions in the database, export them and retrain:
+1. Install and start PostgreSQL.
+2. Create a database (e.g. `maddad`).
+3. In your `.env` file, change `DATABASE_URL` to:
+   ```
+   DATABASE_URL=postgresql://postgres:your_password@localhost:5432/maddad
+   ```
+4. Restart the server — tables are created automatically on startup.
 
-```python
-# In app/ml/train.py, add a function that reads from the DB instead of
-# generating synthetic data, then call train_and_save() as before.
-```
