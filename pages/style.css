@@ -1,3 +1,32 @@
+/*
+===========================================
+  MADDAD PROJECT — style.css
+  كل تصميم التطبيق في ملف واحد
+===========================================
+
+  أقسام هذا الملف (ابحث عن التعليقات):
+  
+  - RESET              ← إعادة تعيين CSS الافتراضي
+  - INDEX PAGE         ← تصميم صفحة البداية القديمة
+  - PARENT PAGE        ← تسجيل الدخول وإنشاء الحساب
+  - HOME NEW PAGE      ← الصفحة الرئيسية الأولى
+  - HOME LOGIN PAGE    ← الصفحة الرئيسية بعد الدخول + البانل الجانبي
+  - QUESTIONNAIRE      ← تصميم الاستبيان والأزرار
+  - RESULT PAGE        ← تصميم صفحة النتيجة
+  - FOLLOWUP PAGE      ← تصميم أسئلة المتابعة
+  - GROWTH PAGE        ← مساحة النمو وبطاقات المهارات
+  - SETTINGS PAGE      ← صفحة الإعدادات
+  - CHILD PAGES        ← صفحات الطفل
+
+  ألوان التطبيق الأساسية:
+  --color-primary:     #3c5274  (كحلي غامق - الأزرار الرئيسية)
+  --color-secondary:   #7a93b5  (كحلي متوسط)
+  --color-light:       #c8d8ea  (كحلي فاتح - زر السابق)
+  --color-bg:          #F3F8FF  (خلفية الصفحات)
+  --color-card:        rgba(255,255,255,0.88) (خلفية البطاقات)
+===========================================
+*/
+
 /* =========================
    RESET
 ========================= */
@@ -336,7 +365,7 @@ body{
 }
 
 .selection-btn.selected{
-  background: #6E89BC;
+  background: #465f7d;
   color: #FFFFFF;
 }
 
@@ -556,27 +585,17 @@ body{
 
 .home-new-start-btn{
   min-width: 270px;
-  height: 84px;
-
+  height: 72px;
   border: none;
   border-radius: 999px;
-
-  background: linear-gradient(
-    135deg,
-    #D9A8B8 0%,
-    #6E89BC 100%
-  );
-
+  background: #3c5274;
   color: #FFFFFF;
-  font-size: 22px;
-  font-weight: 500;
-
+  font-size: 20px;
+  font-weight: 600;
   cursor: pointer;
   font-family: inherit;
-
   transition: 0.25s ease;
-
-  box-shadow: 0 12px 24px rgba(110,137,188,0.25);
+  box-shadow: 0 10px 24px rgba(60,82,116,0.28);
 }
 
 .home-new-start-btn:hover{
@@ -760,31 +779,39 @@ body{
 }
 
 .return-side-item span{
-  font-size: 16px;
+  font-size: 13px;
   color: #5E5968;
   text-align: center;
 }
 
 .return-side-icon{
-  width: 62px;
-  height: 62px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
+  font-size: 20px;
   line-height: 1;
 }
 
 .filled-icon{
-  background: #57516A;
+  background: #3c5274;
   color: #FFFFFF;
+}
+
+.filled-icon svg{
+  stroke: #FFFFFF;
 }
 
 .outlined-icon{
   background: #FFFFFF;
-  color: #57516A;
-  border: 4px solid #57516A;
+  color: #3c5274;
+  border: 2.5px solid #3c5274;
+}
+
+.outlined-icon svg{
+  stroke: #3c5274;
 }
 
 /* main card */
@@ -869,14 +896,14 @@ body{
   height: 70px;
   border: none;
   border-radius: 999px;
-  background: linear-gradient(135deg, #D9A8B8 0%, #6E89BC 100%);
+  background: #7a93b5;
   color: #FFFFFF;
   font-size: 20px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   font-family: inherit;
   transition: 0.25s ease;
-  box-shadow: 0 12px 24px rgba(110,137,188,0.22);
+  box-shadow: 0 10px 24px rgba(122,147,181,0.28);
 }
 
 .return-home-start-btn:hover{
@@ -960,13 +987,13 @@ body{
   }
 
   .return-side-icon{
-    width: 58px;
-    height: 58px;
-    font-size: 30px;
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
   }
 
   .return-side-item span{
-    font-size: 15px;
+    font-size: 12px;
   }
 
   .return-home-info-box,
@@ -1100,7 +1127,7 @@ body{
   font-size: 26px;
   font-weight: bold;
   color: #1F1F27;
-  margin: 0 0 18px;
+  margin: 0 0 8px;
   text-align: right;
   line-height: 1.8;
 }
@@ -1109,15 +1136,15 @@ body{
   font-size: 18px;
   line-height: 2;
   color: #30333C;
-  margin: 0 0 24px;
+  margin: 0 0 10px;
   text-align: right;
 }
 
 .questionnaire-options{
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-bottom: 20px;
+  gap: 10px;
+  margin-bottom: 14px;
 }
 
 .questionnaire-option{
@@ -1142,7 +1169,7 @@ body{
 }
 
 .questionnaire-option.selected{
-  background: #6E89BC;
+  background: #3c5274;
   color: #FFFFFF;
 }
 
@@ -1180,15 +1207,16 @@ body{
 }
 
 .primary-btn{
-  background: linear-gradient(135deg, #D9A8B8 0%, #6E89BC 100%);
+  background: #3c5274;
   color: #FFFFFF;
-  box-shadow: 0 12px 24px rgba(110,137,188,0.22);
+  box-shadow: 0 12px 24px rgba(60,82,116,0.35);
 }
 
 .secondary-btn{
-  background: #EEF2F9;
-  color: #2F3443;
-  box-shadow: 0 10px 20px rgba(118, 130, 154, 0.10);
+  background: #c8d8ea;
+  color: #3c5274;
+  box-shadow: 0 10px 20px rgba(176,194,216,0.20);
+  font-weight: 700;
 }
 
 /* لما يختفي زر السابق في أول سؤال */
@@ -1417,9 +1445,9 @@ body{
 }
 
 .result-main-btn{
-  background: linear-gradient(135deg, #D9A8B8 0%, #6E89BC 100%);
+  background: #3c5274;
   color: #FFFFFF;
-  box-shadow: 0 12px 24px rgba(110,137,188,0.22);
+  box-shadow: 0 10px 24px rgba(60,82,116,0.28);
 }
 
 .result-secondary-btn{
@@ -1679,7 +1707,7 @@ body{
 }
 
 .questionnaire-option.selected{
-  background: #6E89BC;
+  background: #3c5274;
   color: #FFFFFF;
 }
 
@@ -1701,9 +1729,9 @@ body{
   cursor: pointer;
   font-family: inherit;
   transition: 0.25s ease;
-  background: linear-gradient(135deg, #D9A8B8 0%, #6E89BC 100%);
+  background: #3c5274;
   color: #FFFFFF;
-  box-shadow: 0 12px 24px rgba(110,137,188,0.22);
+  box-shadow: 0 10px 24px rgba(60,82,116,0.28);
 }
 
 .questionnaire-next-btn:hover{
@@ -1900,36 +1928,40 @@ body{
 }
 
 .growth-side-item span{
-  font-size: 15px;
+  font-size: 13px;
   text-align: center;
+  color: #3c5274;
 }
 
 .growth-side-icon{
-  width: 62px;
-  height: 62px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 34px;
+  font-size: 20px;
   line-height: 1;
 }
 
 .home-side-icon{
-  background: #F3F4F8;
-  color: #6A637B;
+  background: #edf1f7;
+  color: #3c5274;
 }
+.home-side-icon svg{ stroke: #3c5274; }
 
 .active-side-icon{
-  background: #6A637B;
+  background: #3c5274;
   color: #FFFFFF;
 }
+.active-side-icon svg{ stroke: #FFFFFF; }
 
 .outline-side-icon{
   background: #FFFFFF;
-  color: #6A637B;
-  border: 5px solid #6A637B;
+  color: #3c5274;
+  border: 2.5px solid #3c5274;
 }
+.outline-side-icon svg{ stroke: #3c5274; }
 
 /* main card */
 .growth-main-card,
@@ -1981,9 +2013,9 @@ body{
 }
 
 .growth-tab.active{
-  background: linear-gradient(135deg, #D9A8B8 0%, #6E89BC 100%);
+  background: #3c5274;
   color: #FFFFFF;
-  box-shadow: 0 12px 24px rgba(110,137,188,0.18);
+  box-shadow: 0 8px 20px rgba(60,82,116,0.25);
 }
 
 .growth-scroll-box{
@@ -2001,32 +2033,39 @@ body{
 }
 
 .growth-item-card{
-  background: transparent;
-  border: none;
+  background: #FFFFFF;
+  border: 1.5px solid #e8eef7;
+  border-radius: 20px;
   text-align: center;
   cursor: pointer;
   font-family: inherit;
-  transition: 0.2s ease;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  padding: 16px 10px 14px;
+  box-shadow: 0 6px 18px rgba(60,82,116,0.07);
 }
 
 .growth-item-card:hover{
-  transform: translateY(-3px);
+  transform: translateY(-4px);
+  box-shadow: 0 14px 32px rgba(60,82,116,0.14);
+  border-color: #b0c2d8;
 }
 
 .growth-item-image{
-  width: 150px;
+  width: 110px;
   max-width: 100%;
-  height: 150px;
+  height: 110px;
   object-fit: contain;
   margin: 0 auto 10px;
   display: block;
+  border-radius: 12px;
 }
 
 .growth-item-title{
-  font-size: 18px;
-  font-weight: bold;
-  color: #1F1F27;
+  font-size: 15px;
+  font-weight: 700;
+  color: #3c5274;
   margin-bottom: 0;
+  line-height: 1.4;
 }
 
 /* detail */
@@ -2097,13 +2136,13 @@ body{
   height: 56px;
   border: none;
   border-radius: 999px;
-  background: linear-gradient(135deg, #D9A8B8 0%, #6E89BC 100%);
+  background: #3c5274;
   color: #FFFFFF;
   font-size: 18px;
   font-weight: bold;
   font-family: inherit;
   cursor: pointer;
-  box-shadow: 0 12px 24px rgba(110,137,188,0.18);
+  box-shadow: 0 10px 24px rgba(60,82,116,0.22);
 }
 
 @media (max-width: 1200px){
@@ -2303,36 +2342,40 @@ body{
 }
 
 .settings-side-item span{
-  font-size: 15px;
+  font-size: 13px;
   text-align: center;
+  color: #3c5274;
 }
 
 .settings-side-icon{
-  width: 62px;
-  height: 62px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 34px;
+  font-size: 20px;
   line-height: 1;
 }
 
 .home-side-icon{
-  background: #F3F4F8;
-  color: #6A637B;
+  background: #edf1f7;
+  color: #3c5274;
 }
+.home-side-icon svg{ stroke: #3c5274; }
 
 .active-side-icon{
-  background: #6A637B;
+  background: #3c5274;
   color: #FFFFFF;
 }
+.active-side-icon svg{ stroke: #FFFFFF; }
 
 .outline-side-icon{
   background: #FFFFFF;
-  color: #6A637B;
-  border: 5px solid #6A637B;
+  color: #3c5274;
+  border: 2.5px solid #3c5274;
 }
+.outline-side-icon svg{ stroke: #3c5274; }
 
 /* main card */
 .settings-main-card{
@@ -2392,10 +2435,12 @@ body{
 }
 
 .settings-btns-wrap{
-  display:flex;
-  gap:14px;
-  justify-content:center;
-  flex-wrap:wrap;
+  display: flex;
+  gap: 14px;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  margin-top: auto;
+  padding-top: 28px;
 }
 
 .settings-main-btn,
@@ -2422,15 +2467,15 @@ body{
 }
 
 .settings-main-btn{
-  background: linear-gradient(135deg, #D9A8B8 0%, #6E89BC 100%);
+  background: #3c5274;
   color: #FFFFFF;
-  box-shadow: 0 12px 24px rgba(110,137,188,0.18);
+  box-shadow: 0 10px 24px rgba(60,82,116,0.28);
 }
 
 .settings-secondary-btn{
-  background: #EEF2F9;
-  color: #2F3443;
-  box-shadow: 0 10px 20px rgba(118, 130, 154, 0.10);
+  background: #b0c2d8;
+  color: #FFFFFF;
+  box-shadow: 0 10px 20px rgba(176,194,216,0.25);
 }
 
 @media (max-width: 900px){
@@ -2577,8 +2622,8 @@ body{
   font-size:18px;
   color:white;
   cursor:pointer;
-  background:linear-gradient(135deg,#D9A8B8 0%, #6E89BC 100%);
-  box-shadow:0 12px 24px rgba(110,137,188,0.22);
+  background: #3c5274;
+  box-shadow: 0 10px 24px rgba(60,82,116,0.28);
   font-family:inherit;
 }
 
@@ -2697,9 +2742,9 @@ body{
 }
 
 .child-games-tab.active{
-  background: linear-gradient(135deg, #D9A8B8 0%, #6E89BC 100%);
+  background: #3c5274;
   color: #FFFFFF;
-  box-shadow: 0 12px 24px rgba(110,137,188,0.18);
+  box-shadow: 0 10px 24px rgba(60,82,116,0.22);
 }
 
 .child-games-scroll-box{
@@ -2856,13 +2901,13 @@ body{
   height: 56px;
   border: none;
   border-radius: 999px;
-  background: linear-gradient(135deg, #D9A8B8 0%, #6E89BC 100%);
+  background: #3c5274;
   color: #FFFFFF;
   font-size: 18px;
   font-weight: bold;
   font-family: inherit;
   cursor: pointer;
-  box-shadow: 0 12px 24px rgba(110,137,188,0.18);
+  box-shadow: 0 10px 24px rgba(60,82,116,0.22);
 }
 
 @media (max-width: 1200px){
@@ -2971,4 +3016,553 @@ body{
 html, body{
   height:auto;
   overflow-y:auto;
+}
+
+/* ── Logout icon SVG global fix ─────────────────── */
+.logout-icon-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: unset !important;
+  transform: none !important;
+}
+.logout-icon-btn svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+/* ── Calendar add button ──────────────────────────── */
+.calendar-add-btn {
+  display: inline-block;
+  background: #465A78;
+  color: #fff !important;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  transition: background 0.18s, transform 0.18s;
+}
+.calendar-add-btn:hover {
+  background: #354565;
+  transform: translateY(-1px);
+}
+
+/* ── Calendar add button ─────────────────────────── */
+.calendar-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: #465f7d;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.18s, transform 0.15s;
+}
+.calendar-add-btn:hover {
+  background: #3a5069;
+  transform: translateY(-1px);
+}
+/* ── Cal picker box ─────────────────────────────── */
+.cal-picker-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* ── Calendar add buttons in reminder banner ─────── */
+.calendar-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: none;
+  background: #3c5274;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.18s, transform 0.15s;
+}
+.calendar-add-btn:hover {
+  background: #2e3f5a;
+  transform: translateY(-1px);
+}
+
+/* ── Growth card new elements ────────────────────── */
+.growth-card-icon-wrap {
+  width: 90px;
+  height: 90px;
+  border-radius: 18px;
+  margin: 0 auto 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.growth-skill-icon {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+}
+
+.growth-card-badge {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 3px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+/* ── Make all nav buttons smaller globally ────────── */
+.questionnaire-nav-btn {
+  min-width: 120px !important;
+  height: 48px !important;
+  font-size: 16px !important;
+}
+
+.return-home-start-btn {
+  min-width: 200px !important;
+  height: 56px !important;
+  font-size: 17px !important;
+}
+
+.result-main-btn {
+  padding: 13px !important;
+  font-size: 16px !important;
+}
+
+.settings-main-btn,
+.settings-secondary-btn {
+  min-width: 150px !important;
+  height: 48px !important;
+  font-size: 15px !important;
+}
+
+/* ── Growth info message ───────────────────────── */
+.growth-info-msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #fff8e1;
+  border: 1.5px solid #f0c040;
+  border-radius: 14px;
+  padding: 14px 18px;
+  font-size: 14px;
+  line-height: 1.8;
+  color: #7a5400;
+  text-align: right;
+}
+.growth-info-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ── السابق — lighter than التالي everywhere ── */
+#prevQuestionBtn,
+.followup-prev-btn {
+  background: #c8d8ea !important;
+  color: #3c5274 !important;
+  box-shadow: 0 8px 18px rgba(176,194,216,0.22) !important;
+}
+/* =========================
+   DASHBOARD PAGE
+========================= */
+
+.dashboard-body{
+  min-height: 100vh;
+  margin: 0;
+  background: #F3F8FF;
+  direction: rtl;
+  overflow-y: auto;
+  overflow-x: hidden;
+  font-family: 'Cairo', sans-serif;
+}
+
+.dashboard-shell{
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top right, rgba(141,162,201,0.18), transparent 18%),
+    radial-gradient(circle at bottom left, rgba(216,168,184,0.14), transparent 16%),
+    #F3F8FF;
+}
+
+/* top bar */
+.dashboard-topbar{
+  width: 100%;
+  height: 82px;
+  background: rgba(255,255,255,0.90);
+  border-bottom: 1px solid #E3E8F2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  box-sizing: border-box;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.dashboard-logo{
+  width: 78px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.dashboard-actions{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dashboard-actions button{
+  border: none;
+  background: transparent;
+  color: #A9A9AE;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s ease;
+  font-family: inherit;
+}
+
+.dashboard-actions button:hover{
+  opacity: 0.8;
+}
+
+.dashboard-actions button:first-child{
+  width: 42px;
+  height: 42px;
+  font-size: 30px;
+  transform: translateY(1px);
+}
+
+.dashboard-actions button:last-child{
+  width: 36px;
+  height: 36px;
+  font-size: 28px;
+}
+
+/* main layout */
+.dashboard-main{
+  display: grid;
+  grid-template-columns: 1.18fr 0.82fr;
+  grid-template-areas:
+    "hero stats"
+    "chart history"
+    "chart skills";
+  gap: 18px;
+  padding: 18px;
+  box-sizing: border-box;
+  min-height: calc(100vh - 82px);
+  align-items: start;
+}
+
+/* common card */
+.dashboard-card{
+  background: rgba(255,255,255,0.82);
+  border-radius: 34px;
+  box-shadow: 0 22px 46px rgba(84, 94, 117, 0.10);
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.dashboard-card h3{
+  font-size: 24px;
+  font-weight: bold;
+  color: #1F1F27;
+  margin: 0 0 18px;
+  text-align: right;
+  line-height: 1.6;
+}
+
+/* hero card */
+.main-card{
+  grid-area: hero;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  min-height: 235px;
+}
+
+.risk-image{
+  width: 126px;
+  min-width: 126px;
+  height: 126px;
+  object-fit: contain;
+}
+
+.dashboard-hero-text{
+  flex: 1;
+  min-width: 0;
+}
+
+#riskTitle{
+  font-size: 30px;
+  font-weight: bold;
+  color: #1F1F27;
+  margin: 0 0 12px;
+  line-height: 1.55;
+  text-align: right;
+}
+
+#riskDesc{
+  font-size: 17px;
+  line-height: 2;
+  color: #5A556B;
+  margin: 0;
+  text-align: right;
+}
+
+/* stats */
+.dashboard-stats{
+  grid-area: stats;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.stat-box{
+  background: rgba(255,255,255,0.82);
+  border-radius: 28px;
+  box-shadow: 0 18px 40px rgba(84, 94, 117, 0.08);
+  padding: 22px 18px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 109px;
+}
+
+.stat-box span{
+  font-size: 15px;
+  color: #697285;
+  margin-bottom: 8px;
+}
+
+.stat-box h3{
+  margin: 0;
+  font-size: 34px;
+  font-weight: bold;
+  color: #3c5274;
+  text-align: center;
+}
+
+/* chart */
+.dashboard-chart-card{
+  grid-area: chart;
+  display: flex;
+  flex-direction: column;
+  min-height: 520px;
+}
+
+.dashboard-chart-wrap{
+  flex: 1;
+  min-height: 330px;
+  position: relative;
+}
+
+#progressChart{
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.trend-text{
+  margin-top: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #3c5274;
+  text-align: right;
+  line-height: 1.8;
+}
+
+/* history */
+.dashboard-history-card{
+  grid-area: history;
+}
+
+.dashboard-history-list{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dashboard-history-row{
+  display: grid;
+  grid-template-columns: 1.15fr 1fr 0.7fr;
+  gap: 10px;
+  align-items: center;
+  background: #F8FAFD;
+  border: 1px solid #E8EEF6;
+  border-radius: 18px;
+  padding: 14px 16px;
+  font-size: 14px;
+  color: #4A5060;
+}
+
+.dashboard-history-head{
+  font-weight: bold;
+  color: #3c5274;
+  background: #EDF3FB;
+}
+
+/* skills */
+.dashboard-skills-card{
+  grid-area: skills;
+}
+
+.skills-list{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.skills-list span{
+  background: #EDF3FB;
+  color: #3c5274;
+  border: 1px solid #D9E5F2;
+  padding: 10px 16px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.dashboard-empty{
+  font-size: 15px;
+  color: #697285;
+  text-align: center;
+  padding: 18px 0;
+}
+
+/* tablet */
+@media (max-width: 1100px){
+  .dashboard-main{
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "hero"
+      "stats"
+      "chart"
+      "history"
+      "skills";
+    min-height: auto;
+  }
+
+  .dashboard-stats{
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .dashboard-chart-card{
+    min-height: 420px;
+  }
+
+  .dashboard-chart-wrap{
+    min-height: 260px;
+  }
+}
+
+/* mobile */
+@media (max-width: 768px){
+  .dashboard-topbar{
+    height: 76px;
+    padding: 0 18px;
+  }
+
+  .dashboard-logo{
+    width: 66px;
+  }
+
+  .dashboard-actions button:first-child{
+    width: 38px;
+    height: 38px;
+    font-size: 27px;
+  }
+
+  .dashboard-actions button:last-child{
+    width: 32px;
+    height: 32px;
+    font-size: 24px;
+  }
+
+  .dashboard-main{
+    padding: 14px;
+    gap: 14px;
+  }
+
+  .dashboard-card{
+    border-radius: 24px;
+    padding: 18px 16px;
+  }
+
+  .main-card{
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-height: auto;
+  }
+
+  .risk-image{
+    width: 104px;
+    min-width: 104px;
+    height: 104px;
+  }
+
+  #riskTitle{
+    font-size: 26px;
+    text-align: center;
+  }
+
+  #riskDesc{
+    font-size: 15px;
+    text-align: center;
+  }
+
+  .dashboard-stats{
+    grid-template-columns: 1fr;
+  }
+
+  .stat-box h3{
+    font-size: 28px;
+  }
+
+  .dashboard-history-row{
+    grid-template-columns: 1fr;
+    text-align: right;
+  }
+
+  .dashboard-chart-card{
+    min-height: auto;
+  }
+
+  .dashboard-chart-wrap{
+    min-height: 220px;
+  }
+
+  .trend-text{
+    text-align: center;
+  }
+
+  .dashboard-card h3{
+    font-size: 22px;
+  }
 }
