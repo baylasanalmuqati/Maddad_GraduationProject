@@ -1,102 +1,346 @@
 <!DOCTYPE html>
+<!--
+===========================================
+  مشروع مدد - Maddad Project
+  صفحة البداية (Splash + اختيار المستخدم)
+===========================================
+  الملفات الرئيسية:
+  - index.html        ← هذه الصفحة (Splash + اختيار الدور)
+  - pages/parent.html ← تسجيل دخول / إنشاء حساب ولي الأمر
+  - pages/home-login.html ← الصفحة الرئيسية بعد الدخول
+  - pages/questionnaire.html ← الاستبيان
+  - pages/result.html ← نتيجة الاستبيان
+  - pages/followup.html ← أسئلة المتابعة (عند الخطر العالي فقط)
+  - pages/games.html  ← مساحة النمو (ألعاب + نصائح)
+  - pages/settings.html ← الإعدادات
+  - pages/script.js   ← كل منطق التطبيق
+  - pages/style.css   ← كل التصميم
+  - pages/api.js      ← التواصل مع الـ Backend
+  
+  ألوان التطبيق:
+  - الكحلي الأساسي: #3c5274
+  - الكحلي الفاتح:  #7a93b5
+  - الكحلي الناعم:  #c8d8ea
+===========================================
+-->
+
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>مدد | MADDAD</title>
+  <title>مدد | أهلاً بك</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
 
-  <!-- ربط ملف الستايل -->
-  <link rel="stylesheet" href="pages/style.css" />
+    body {
+      font-family: sans-serif;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(circle at top right, rgba(141,162,201,0.22), transparent 18%),
+        radial-gradient(circle at bottom left, rgba(216,168,184,0.18), transparent 16%),
+        #F3F8FF;
+      overflow: hidden;
+    }
 
+    /* ══ SHARED CARD ══ */
+    .screen-card {
+      width: 90%;
+      max-width: 460px;
+      background: rgba(255,255,255,0.90);
+      border-radius: 34px;
+      box-shadow: 0 22px 46px rgba(84,94,117,0.10);
+      padding: 48px 36px 42px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .maddad-logo {
+      width: 100px;
+      margin: 0 auto 22px;
+      display: block;
+    }
+
+    /* ══ SPLASH ══ */
+    #splash { animation: fadeUp 0.65s cubic-bezier(0.23,1,0.32,1) both; }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(24px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    .splash-title {
+      font-size: 27px;
+      font-weight: 800;
+      color: #2F3443;
+      margin-bottom: 14px;
+    }
+
+    .splash-text {
+      font-size: 16px;
+      line-height: 2;
+      color: #697285;
+      margin-bottom: 34px;
+    }
+
+    .splash-btn {
+      padding: 14px 54px;
+      background: #3c5274;
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      font-size: 17px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(60,82,116,0.25);
+      transition: transform 0.18s, box-shadow 0.18s;
+    }
+    .splash-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px rgba(60,82,116,0.32);
+    }
+
+    /* ══ BUBBLES TRANSITION ══ */
+    #bubblesLayer {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      pointer-events: none;
+      display: none;
+      overflow: hidden;
+    }
+
+    .bubble {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0;
+    }
+
+    /* ══ ROLE SCREEN ══ */
+    #roles {
+      display: none;
+      position: absolute;
+    }
+    #roles.show {
+      display: block;
+      position: relative;
+      animation: fadeUp 0.6s cubic-bezier(0.23,1,0.32,1) both;
+    }
+
+    .role-title {
+      font-size: 23px;
+      font-weight: 800;
+      color: #2F3443;
+      margin-bottom: 5px;
+    }
+    .role-subtitle {
+      font-size: 15px;
+      color: #697285;
+      margin-bottom: 26px;
+      line-height: 1.8;
+    }
+
+    .role-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .role-btn {
+      width: 100%;
+      border: none;
+      border-radius: 18px;
+      padding: 22px 24px;
+      cursor: pointer;
+      text-align: right;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      text-decoration: none;
+      transition: transform 0.22s, box-shadow 0.22s;
+      font-family: inherit;
+    }
+    .role-btn:hover { transform: translateY(-3px); }
+
+    .role-btn.parent {
+      background: rgba(60,82,116,0.08);
+      box-shadow: 0 6px 18px rgba(60,82,116,0.08);
+    }
+    .role-btn.parent:hover { box-shadow: 0 12px 28px rgba(60,82,116,0.15); }
+
+    .role-btn.child {
+      background: rgba(120,80,180,0.08);
+      box-shadow: 0 6px 18px rgba(120,80,180,0.08);
+    }
+    .role-btn.child:hover { box-shadow: 0 12px 28px rgba(120,80,180,0.15); }
+
+    .role-label h3 {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 3px;
+    }
+    .role-btn.parent .role-label h3 { color: #3c5274; }
+    .role-btn.child  .role-label h3 { color: #6b3fa0; }
+
+    .role-label p {
+      font-size: 13px;
+      color: #70788A;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .role-arrow { font-size: 18px; opacity: 0.35; color: #3c5274; }
+    .role-btn.child .role-arrow { color: #6b3fa0; }
+
+    .role-divider {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .role-divider::before, .role-divider::after {
+      content:''; flex:1; height:1px; background:#e0e6ef;
+    }
+    .role-divider span { font-size: 13px; color: #bbc4d0; }
+  </style>
 </head>
+<body>
 
-<body class="landing-body">
-
-  <div class="landing-page-wrap">
-
-    <div class="landing-main-card">
-
-      <!-- الشعار -->
-      <img src="pictures/logo.png" class="landing-logo" alt="شعار مدد" />
-
-      <!-- العنوان -->
-      <h1 class="landing-title">مرحباً بكم في تطبيق مدد</h1>
-
-      <!-- النص -->
-      <p class="landing-text">
-        هلا والله! مع مدد نساعدك تتابع نمو طفلكم ونكتشف احتياجاته خطوة بخطوة.
-      </p>
-
-      <!-- الأزرار -->
-      <div class="landing-role-grid">
-
-        <button class="landing-role-card parent-card" onclick="goParent()">
-          <div class="landing-role-text">
-            <h3>ولي الأمر</h3>
-            <p>الدخول لإدارة الحساب والاستبيان</p>
-          </div>
-        </button>
-
-        <button class="landing-role-card child-card" onclick="goChild()">
-          <div class="landing-role-text">
-            <h3>الطفل</h3>
-            <p>الدخول إلى صفحة الألعاب</p>
-          </div>
-        </button>
-
-      </div>
-
-    </div>
-
+  <!-- SPLASH -->
+  <div class="screen-card" id="splash">
+    <img src="pictures/logo.png" class="maddad-logo" alt="مدد" />
+    <h1 class="splash-title">أهلاً بك في مدد</h1>
+    <p class="splash-text">
+      منصة متكاملة تساعدك على متابعة نمو طفلك<br>
+      واكتشاف احتياجاته في وقت مبكر<br>
+      خطوة بخطوة، بكل ثقة واطمئنان
+    </p>
+    <button class="splash-btn" onclick="startTransition()">ابدأ الآن</button>
   </div>
 
-  <!-- نموذج إنشاء حساب -->
-  <div class="landing-page-wrap" id="registerSection" style="display:none;">
-    <div class="landing-main-card">
-      <h2 class="landing-title">إنشاء حساب جديد</h2>
-      <form id="registerForm">
-        <input type="text" id="username" placeholder="اسم المستخدم" required style="display:block;width:100%;margin-bottom:10px;padding:8px;border-radius:8px;border:1px solid #ccc;" />
-        <input type="text" id="fullName" placeholder="الاسم الكامل" required style="display:block;width:100%;margin-bottom:10px;padding:8px;border-radius:8px;border:1px solid #ccc;" />
-        <input type="email" id="email" placeholder="البريد الإلكتروني" required style="display:block;width:100%;margin-bottom:10px;padding:8px;border-radius:8px;border:1px solid #ccc;" />
-        <input type="tel" id="phone" placeholder="رقم الجوال (اختياري)" style="display:block;width:100%;margin-bottom:10px;padding:8px;border-radius:8px;border:1px solid #ccc;" />
-        <input type="password" id="password" placeholder="كلمة المرور" required style="display:block;width:100%;margin-bottom:10px;padding:8px;border-radius:8px;border:1px solid #ccc;" />
-        <button type="button" onclick="handleRegister()" class="landing-role-card parent-card" style="width:100%;margin-bottom:8px;">إنشاء حساب</button>
-        <button type="button" onclick="document.getElementById('registerSection').style.display='none';document.querySelector('.landing-page-wrap').style.display='flex';" class="landing-role-card child-card" style="width:100%;">رجوع</button>
-      </form>
+  <!-- BUBBLES LAYER -->
+  <div id="bubblesLayer"></div>
+
+  <!-- ROLE PICKER -->
+  <div class="screen-card" id="roles">
+    <img src="pictures/logo.png" class="maddad-logo" alt="مدد" />
+    <h1 class="role-title">من أنت؟</h1>
+    <p class="role-subtitle">نورت مدد! كيف تريد تسجيل الدخول؟</p>
+
+    <div class="role-grid">
+      <a href="pages/parent.html" class="role-btn parent">
+        <div class="role-label">
+          <h3>ولي الأمر</h3>
+          <p>إدارة الحساب وإجراء الاستبيان</p>
+        </div>
+        <span class="role-arrow">←</span>
+      </a>
+
+      <div class="role-divider"><span>أو</span></div>
+
+      <a href="pages/child-login.html" class="role-btn child">
+        <div class="role-label">
+          <h3>الطفل</h3>
+          <p>الدخول إلى صفحة الألعاب والأنشطة</p>
+        </div>
+        <span class="role-arrow">←</span>
+      </a>
     </div>
   </div>
 
-  <!-- ربط الجافاسكربت -->
-  <script src="pages/api.js"></script>
-  <script src="pages/script.js"></script>
   <script>
-    async function handleRegister() {
-      var username = document.getElementById('username').value.trim();
-      var fullName = document.getElementById('fullName').value.trim();
-      var email = document.getElementById('email').value.trim();
-      var phone = document.getElementById('phone').value.trim();
-      var password = document.getElementById('password').value;
+  function startTransition() {
+    const layer = document.getElementById('bubblesLayer');
+    layer.style.display = 'block';
+    layer.innerHTML = '';
 
-      if (!username || !fullName || !email || !password) {
-        alert('يرجى تعبئة جميع الحقول المطلوبة');
-        return;
+    const W = window.innerWidth;
+    const H = window.innerHeight;
+
+    // Soft pastel colors with transparency — child-like, soothing
+    const colors = [
+      'rgba(100,140,200,0.18)',
+      'rgba(180,130,210,0.16)',
+      'rgba(120,180,220,0.15)',
+      'rgba(200,150,190,0.14)',
+      'rgba(140,190,230,0.17)',
+      'rgba(160,120,200,0.15)',
+      'rgba(100,160,210,0.13)',
+      'rgba(190,140,200,0.16)',
+    ];
+
+    const COUNT = 18;
+    const bubbles = [];
+
+    for (let i = 0; i < COUNT; i++) {
+      const size = 80 + Math.random() * 220;
+      const x = Math.random() * W;
+      const startY = H + size;
+      const color = colors[i % colors.length];
+      const delay = i * 60;
+      const dur = 900 + Math.random() * 400;
+
+      const el = document.createElement('div');
+      el.className = 'bubble';
+      el.style.cssText = `
+        width: ${size}px;
+        height: ${size}px;
+        left: ${x - size/2}px;
+        top: ${startY}px;
+        background: ${color};
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+        border: 1px solid rgba(255,255,255,0.35);
+      `;
+      layer.appendChild(el);
+      bubbles.push({ el, x, startY, size, delay, dur, targetY: -size });
+    }
+
+    // Animate bubbles rising
+    const start = performance.now();
+
+    function ease(t) {
+      return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2,2)/2;
+    }
+
+    let switchDone = false;
+
+    function tick(now) {
+      const elapsed = now - start;
+      let allDone = true;
+
+      bubbles.forEach(b => {
+        const t = Math.max(0, Math.min((elapsed - b.delay) / b.dur, 1));
+        if (t < 1) allDone = false;
+
+        const e = ease(t);
+        const y = b.startY + (b.targetY - b.startY) * e;
+        b.el.style.top = y + 'px';
+        b.el.style.opacity = t < 0.15
+          ? (t / 0.15) * 0.9
+          : t > 0.75
+            ? ((1-t) / 0.25) * 0.9
+            : 0.9;
+      });
+
+      // Switch screens when roughly half bubbles are up
+      if (!switchDone && elapsed > COUNT * 60 * 0.55) {
+        switchDone = true;
+        document.getElementById('splash').style.display = 'none';
+        document.getElementById('roles').classList.add('show');
       }
 
-      try {
-        await apiRegister({
-          email: email,
-          password: password,
-          child_name: fullName,
-          child_age: '12-18',
-          child_gender: 'ذكر',
-        });
-        document.getElementById('registerSection').style.display = 'none';
-        document.querySelector('.landing-page-wrap').style.display = 'flex';
-        alert('تم إنشاء الحساب بنجاح');
-      } catch (err) {
-        alert(err.message || 'حدث خطأ أثناء إنشاء الحساب');
+      if (!allDone) {
+        requestAnimationFrame(tick);
+      } else {
+        layer.style.display = 'none';
+        layer.innerHTML = '';
       }
     }
+
+    requestAnimationFrame(tick);
+  }
   </script>
 
 </body>
