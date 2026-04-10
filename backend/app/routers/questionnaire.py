@@ -51,10 +51,10 @@ def submit_questionnaire(
     try:
         ml_risk, ml_confidence = predict(body.age_group, body.gender, answers_dict)
     except FileNotFoundError:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Machine learning model not found. Please ensure model.pkl is deployed."
-        )
+    raise HTTPException(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        detail="Machine learning files not found. Please ensure the deployed model assets are available."
+    )
 
     failed_skills = [k for k, v in answers_dict.items() if v == 1]
     
