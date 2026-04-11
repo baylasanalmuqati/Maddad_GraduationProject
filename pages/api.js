@@ -5,15 +5,20 @@
  *
  * Configuration
  * -------------
- * Change MADDAD_API_BASE to your deployed backend URL, e.g.:
- *   const MADDAD_API_BASE = "https://maddad-api.onrender.com";
+ * You can configure API base in one of these ways:
+ * 1) window.MADDAD_API_BASE before loading this file
+ * 2) localStorage key "MADDAD_API_BASE"
+ * 3) fallback default below (localhost for local development)
  *
  * When the backend is unreachable, every function falls back to the
  * localStorage-based data that the original script.js already uses, so
  * the app continues to work even without a running server.
  */
 
-const MADDAD_API_BASE = "http://localhost:8000";
+const MADDAD_API_BASE =
+  window.MADDAD_API_BASE ||
+  localStorage.getItem("MADDAD_API_BASE") ||
+  "http://localhost:8000";
 
 /* -----------------------------------------------------------------------
    Token helpers (stored in sessionStorage so it is cleared on tab close)

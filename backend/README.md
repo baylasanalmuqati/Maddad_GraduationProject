@@ -1,7 +1,7 @@
 # Maddad Backend
 
 FastAPI backend for the Maddad ASD-screening platform.  
-Uses **SQLite** by default — no database installation needed; everything is stored in a single file (`maddad.db`) that is created automatically the first time you start the server.
+Uses **SQLite** by default for local development, and also supports **PostgreSQL** (including Supabase).
 
 ---
 
@@ -66,7 +66,7 @@ copy .env.example .env      # Windows
 ```
 
 Open `.env` in any text editor.  
-The default settings work out of the box — you do **not** need to change anything to run locally.
+For local development, the default SQLite settings work out of the box.
 
 ---
 
@@ -76,7 +76,8 @@ The default settings work out of the box — you do **not** need to change anyth
 uvicorn app.main:app --reload
 ```
 
-The first time this runs, it automatically creates `maddad.db` in the `backend` folder and sets up all the database tables. **You do not need to run any SQL scripts.**
+If you use SQLite, the first run automatically creates `maddad.db` in the `backend` folder and sets up tables.
+If you use Supabase/PostgreSQL with `database/schema.sql`, ensure that schema has been applied in Supabase; the backend will connect to those existing tables via `DATABASE_URL`.
 
 You should see output like:
 
@@ -151,15 +152,26 @@ It classifies ASD screening results into three levels: `low` / `medium` / `high`
 
 ---
 
-## Switching to PostgreSQL
+## Using Supabase PostgreSQL with `schema.sql`
 
-If you later want to use PostgreSQL instead of SQLite:
+If you already created your Supabase database from `database/schema.sql`:
 
-1. Install and start PostgreSQL.
-2. Create a database (e.g. `maddad`).
-3. In your `.env` file, change `DATABASE_URL` to:
+1. Confirm the schema was executed in the same Supabase project/database you will connect to.
+2. In `backend/.env`, set `DATABASE_URL` to your Supabase PostgreSQL connection string and include SSL:
    ```
-   DATABASE_URL=postgresql://postgres:your_password@localhost:5432/maddad
+   DATABASE_URL=postgresql://postgres:[YOUR-PASSWORD]@db.[YOUR-PROJECT-REF].supabase.co:5432/postgres?sslmode=require
    ```
-4. Restart the server — tables are created automatically on startup.
+   (Pooler format is also supported; see `.env.example`.)
+3. Set a strong `SECRET_KEY` in `backend/.env`.
+4. Start/restart the backend:
+   ```
+   uvicorn app.main:app --reload
+   ```
+5. Verify:
+   - `http://localhost:8000/health` returns `{"status":"ok"}`
+   - Run app flows (register/login/questionnaire) and confirm rows appear in Supabase tables.
 
+Notes:
+- The backend auto-detects DB type from `DATABASE_URL`.
+- On startup, SQLAlchemy runs `create_all`; existing tables from `schema.sql` are reused.
+- The current API uses a subset of schema tables (`users`, `parent_profiles`, `sessions`, `questionnaire_results`).
