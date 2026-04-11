@@ -50,6 +50,7 @@ def submit_questionnaire(
     # CHANGED: ML prediction ONLY. If the model is missing, raise a 500 Server Error.
     try:
         ml_risk, ml_confidence = predict(body.age_group, body.gender, answers_dict)
+        ml_risk = ml_risk.lower()
     except FileNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
