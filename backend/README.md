@@ -157,9 +157,60 @@ If you later want to use PostgreSQL instead of SQLite:
 
 1. Install and start PostgreSQL.
 2. Create a database (e.g. `maddad`).
-3. In your `.env` file, change `DATABASE_URL` to:
+3. In your `.env` file, change:
    ```
+   ENVIRONMENT=production
    DATABASE_URL=postgresql://postgres:your_password@localhost:5432/maddad
+   SECRET_KEY=<strong-random-32+-chars>
+   CORS_ORIGINS=https://your-frontend-domain.com
    ```
-4. Restart the server — tables are created automatically on startup.
+4. Run migrations:
+   ```
+   alembic upgrade head
+   ```
+5. Start the server:
+   ```
+   uvicorn app.main:app --reload
+   ```
 
+> In production mode, the app enforces:
+> - PostgreSQL only
+> - non-default strong `SECRET_KEY`
+> - explicit (non-`*`) `CORS_ORIGINS`
+
+---
+
+## Migrations (Alembic)
+
+- Create migration:
+  ```
+  alembic revision -m "describe_change"
+  ```
+- Apply migration:
+  ```
+  alembic upgrade head
+  ```
+- Rollback one migration:
+  ```
+  alembic downgrade -1
+  ```
+
+---
+
+## Deployment checklist (frontend + backend)
+
+1. Backend environment:
+   - `ENVIRONMENT=production`
+   - `DATABASE_URL=<postgres_url>`
+   - `SECRET_KEY=<strong_random_value>`
+   - `CORS_ORIGINS=<frontend_origin_1,frontend_origin_2>`
+2. Run `alembic upgrade head` before serving app.
+3. Frontend API base:
+   - Set one of:
+     - `window.MADDAD_API_BASE` in HTML
+     - `<meta name="maddad-api-base" content="https://your-backend-domain">`
+     - `localStorage.setItem("maddadApiBase", "...")`
+4. Verify backend health:
+   - `GET /health` should return database and ML readiness.
+5. Smoke test after deploy:
+   - register → login → questionnaire submit → follow-up submit → result/history.

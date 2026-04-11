@@ -84,13 +84,10 @@ class QuestionnaireSubmitRequest(BaseModel):
 
 
 class PredictionResult(BaseModel):
-    # CHANGED: Allow Title Case since the XGBoost model outputs "Low", "Medium", "High"
-    # I kept the lowercase ones too just in case your frontend accidentally sends them
-    risk: Literal["Low", "Medium", "High", "low", "medium", "high"]
+    risk: Literal["low", "medium", "high"]
     confidence: float
     score: int
-    # CHANGED: Made this Optional and default to None since we no longer use rules
-    rule_risk: Optional[str] = None 
+    rule_risk: Optional[str] = None
 
 
 class QuestionnaireSubmitResponse(BaseModel):

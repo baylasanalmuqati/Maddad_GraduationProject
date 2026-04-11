@@ -5,15 +5,45 @@
  *
  * Configuration
  * -------------
- * Change MADDAD_API_BASE to your deployed backend URL, e.g.:
- *   const MADDAD_API_BASE = "https://maddad-api.onrender.com";
+ * Configure API base via one of:
+ * 1) window.MADDAD_API_BASE
+ * 2) <meta name="maddad-api-base" content="...">
+ * 3) localStorage["maddadApiBase"]
  *
  * When the backend is unreachable, every function falls back to the
  * localStorage-based data that the original script.js already uses, so
  * the app continues to work even without a running server.
  */
 
-const MADDAD_API_BASE = "https://maddad-graduationproject.onrender.com";
+const MADDAD_API_BASES = {
+  local: "http://localhost:8000",
+  dev: "https://maddad-graduationproject.onrender.com",
+  prod: "https://maddad-graduationproject.onrender.com"
+};
+
+function resolveApiBase() {
+  const runtimeOverride =
+    window.MADDAD_API_BASE ||
+    document.querySelector('meta[name="maddad-api-base"]')?.content ||
+    localStorage.getItem("maddadApiBase");
+
+  if (runtimeOverride) {
+    return runtimeOverride.replace(/\/+$/, "");
+  }
+
+  const host = window.location.hostname;
+  if (host === "localhost" || host === "127.0.0.1") {
+    return MADDAD_API_BASES.local;
+  }
+
+  if (host.includes("dev") || host.includes("staging")) {
+    return MADDAD_API_BASES.dev;
+  }
+
+  return MADDAD_API_BASES.prod;
+}
+
+const MADDAD_API_BASE = resolveApiBase();
 
 /* -----------------------------------------------------------------------
    Token helpers (stored in sessionStorage so it is cleared on tab close)

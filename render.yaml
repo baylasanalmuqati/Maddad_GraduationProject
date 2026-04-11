@@ -6,7 +6,13 @@ services:
     buildCommand: |
       pip install --upgrade pip
       pip install --only-binary :all: -r backend/requirements.txt
-    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    startCommand: cd backend && alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
+      - key: ENVIRONMENT
+        value: production
       - key: DATABASE_URL
+        scope: run
+      - key: SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
         scope: run

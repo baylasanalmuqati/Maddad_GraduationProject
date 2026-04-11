@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models import QuestionnaireResult, User
-from app.ml.predictor import predict  # CHANGED: Removed rule_based_risk import
+from app.ml.predictor import normalize_risk_label, predict
 from app.routers.auth import _get_current_user
 from app.schemas import (
     HistoryItem,
@@ -47,10 +47,10 @@ def submit_questionnaire(
     # CHANGED: Manually calculate the score by summing the values (1s and 0s)
     score = sum(answers_dict.values())
 
-    # CHANGED: ML prediction ONLY. If the model is missing, raise a 500 Server Error.
     try:
-        ml_risk, ml_confidence = predict(body.age_group, body.gender, answers_dict)
-    except FileNotFoundError:
+        ml_risk_raw, ml_confidence = predict(body.age_group, body.gender, answers_dict)
+        ml_risk = normalize_risk_label(ml_risk_raw)
+    except (FileNotFoundError, ValueError):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Machine learning files not found. Please ensure the deployed model assets are available."
@@ -58,9 +58,7 @@ def submit_questionnaire(
 
     failed_skills = [k for k, v in answers_dict.items() if v == 1]
     
-    # CHANGED: Base the followup condition on the ML prediction instead of the rule-based one.
-    # Added .lower() just in case the ML returns "High" instead of "high".
-    followup_needed = ml_risk.lower() in ("medium", "high")
+    followup_needed = ml_risk == "high"
 
     result = QuestionnaireResult(
         user_id=current_user.id,
@@ -68,7 +66,7 @@ def submit_questionnaire(
         gender=body.gender,
         **answers_dict,
         initial_score=score,
-        initial_risk=ml_risk,  # CHANGED: Save ml_risk here as well, assuming the DB column is still required
+        initial_risk=ml_risk,
         ml_risk=ml_risk,
         ml_confidence=ml_confidence,
     )
@@ -82,7 +80,7 @@ def submit_questionnaire(
             risk=ml_risk,
             confidence=ml_confidence,
             score=score,
-            rule_risk=None,  # CHANGED: Set to None (Make sure your Pydantic schema allows Optional[str] or drop it entirely)
+            rule_risk=None,
         ),
         failed_skills=failed_skills,
         followup_needed=followup_needed,
@@ -106,9 +104,9 @@ def get_history(
             id=r.id,
             date=r.created_at,
             age_group=r.age_group,
-            initial_risk=r.initial_risk,
-            final_risk=r.final_risk,
-            ml_risk=r.ml_risk,
+            initial_risk=normalize_risk_label(r.initial_risk),
+            final_risk=normalize_risk_label(r.final_risk) if r.final_risk else None,
+            ml_risk=normalize_risk_label(r.ml_risk) if r.ml_risk else None,
             ml_confidence=r.ml_confidence,
             score=r.final_score if r.final_score is not None else r.initial_score,
         )

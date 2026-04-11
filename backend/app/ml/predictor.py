@@ -12,6 +12,7 @@ _FEATURES_PATH = Path(__file__).parent / "feature_names.pkl"
 _model = None
 _encoder = None
 _feature_names = None
+_assets_validated = False
 
 
 def _load_assets():
@@ -30,6 +31,36 @@ def _load_assets():
             _feature_names = pickle.load(f)
 
     return _model, _encoder, _feature_names
+
+
+def normalize_risk_label(label: str) -> str:
+    normalized = str(label).strip().lower()
+    if normalized not in {"low", "medium", "high"}:
+        raise ValueError(f"Unexpected risk label from model: {label}")
+    return normalized
+
+
+def validate_ml_assets() -> None:
+    global _assets_validated
+    model, encoder, feature_names = _load_assets()
+
+    if model is None or encoder is None or not isinstance(feature_names, list) or len(feature_names) == 0:
+        raise ValueError("ML assets are invalid or incomplete.")
+
+    classes = getattr(encoder, "classes_", None)
+    if classes is None:
+        raise ValueError("Label encoder is missing classes_.")
+
+    normalized_classes = {str(c).strip().lower() for c in classes}
+    expected = {"low", "medium", "high"}
+    if not expected.issubset(normalized_classes):
+        raise ValueError("Label encoder classes are incompatible. Expected low/medium/high labels.")
+
+    _assets_validated = True
+
+
+def ml_assets_ready() -> bool:
+    return _assets_validated
 
 
 def predict(
@@ -70,7 +101,7 @@ def predict(
     proba = model.predict_proba(features_df)[0]
 
     # 5. تحويل النتيجة إلى Low/Medium/High
-    label = encoder.inverse_transform([pred])[0]
+    label = normalize_risk_label(encoder.inverse_transform([pred])[0])
     confidence = float(max(proba))
 
     return label, confidence

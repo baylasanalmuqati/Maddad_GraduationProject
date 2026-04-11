@@ -452,9 +452,22 @@ function classifyRisk(ageGroup, score) {
   return "low";
 }
 
+function normalizeRisk(risk) {
+  const normalized = String(risk || "low").trim().toLowerCase();
+  if (normalized === "low" || normalized === "medium" || normalized === "high") {
+    return normalized;
+  }
+  return "low";
+}
+
+function needsFollowup(risk) {
+  return normalizeRisk(risk) === "high";
+}
+
 function riskTextArabic(risk) {
-  if (risk === "low") return "منخفضة";
-  if (risk === "medium") return "متوسطة";
+  const normalized = normalizeRisk(risk);
+  if (normalized === "low") return "منخفضة";
+  if (normalized === "medium") return "متوسطة";
   return "مرتفعة";
 }
 
@@ -682,9 +695,10 @@ async function finishQuestionnaire() {
   const initialRisk = classifyRisk(account.childAge, score);
   const failedSkills = getFailedSkills(answers);
 
-  let mlRisk = initialRisk;
+  let mlRisk = normalizeRisk(initialRisk);
   let mlConfidence = null;
   let resultId = null;
+  let followupNeeded = needsFollowup(initialRisk);
 
   // Request ML prediction from the backend
   try {
@@ -693,9 +707,12 @@ async function finishQuestionnaire() {
       account.childGender,
       answers
     );
-    mlRisk = apiResult.prediction.risk;
+    mlRisk = normalizeRisk(apiResult.prediction.risk);
     mlConfidence = apiResult.prediction.confidence;
     resultId = apiResult.result_id;
+    followupNeeded = typeof apiResult.followup_needed === "boolean"
+      ? apiResult.followup_needed
+      : needsFollowup(mlRisk);
   } catch (_) {
     // Backend unavailable – use rule-based result only
   }
@@ -706,15 +723,15 @@ async function finishQuestionnaire() {
     initialAnswers: answers,
     currentAnswers: { ...answers },
     initialScore: score,
-    initialRisk: initialRisk,
-    mlRisk: mlRisk,
+    initialRisk: normalizeRisk(initialRisk),
+    mlRisk: normalizeRisk(mlRisk),
     mlConfidence: mlConfidence,
     resultId: resultId,
     failedSkills: failedSkills,
-    followupNeeded: (initialRisk === "high"),
+    followupNeeded: followupNeeded,
     followupComplete: false,
     finalScore: score,
-    finalRisk: initialRisk
+    finalRisk: normalizeRisk(initialRisk)
   };
 
   saveAssessment(assessment);
@@ -744,11 +761,11 @@ function loadResultPage() {
   const resultMainBtn = document.getElementById("resultMainBtn");
   const resultSecondaryBtn = document.getElementById("resultSecondaryBtn");
 
-  let shownRisk = assessment.initialRisk;
+  let shownRisk = normalizeRisk(assessment.initialRisk);
   let shownScore = assessment.initialScore;
 
   if (assessment.followupComplete) {
-    shownRisk = assessment.finalRisk;
+    shownRisk = normalizeRisk(assessment.finalRisk);
     shownScore = assessment.finalScore;
   }
 
@@ -971,9 +988,9 @@ function handleResultMainAction() {
     return;
   }
 
-  const shownRisk = assessment.followupComplete ? assessment.finalRisk : assessment.initialRisk;
+  const shownRisk = normalizeRisk(assessment.followupComplete ? assessment.finalRisk : assessment.initialRisk);
 
-  if (!assessment.followupComplete && shownRisk === "high") {
+  if (!assessment.followupComplete && assessment.followupNeeded) {
     window.location.href = "followup.html";
     return;
   }
@@ -1510,16 +1527,16 @@ async function finalizeFollowup() {
 
   const updatedAnswers = { ...assessment.currentAnswers, ...followupCollectedAnswers };
   const finalScore = calculateScore(updatedAnswers);
-  const finalRisk = classifyRisk(assessment.ageGroup, finalScore);
+  const finalRisk = normalizeRisk(classifyRisk(assessment.ageGroup, finalScore));
 
-  let mlRisk = finalRisk;
+  let mlRisk = normalizeRisk(finalRisk);
   let mlConfidence = null;
 
   // Request refined ML prediction from the backend
   try {
     if (assessment.resultId) {
       const apiResult = await apiSubmitFollowup(assessment.resultId, followupCollectedAnswers);
-      mlRisk = apiResult.prediction.risk;
+      mlRisk = normalizeRisk(apiResult.prediction.risk);
       mlConfidence = apiResult.prediction.confidence;
     } else {
       const apiResult = await apiSubmitQuestionnaire(
@@ -1527,7 +1544,7 @@ async function finalizeFollowup() {
         assessment.gender,
         updatedAnswers
       );
-      mlRisk = apiResult.prediction.risk;
+      mlRisk = normalizeRisk(apiResult.prediction.risk);
       mlConfidence = apiResult.prediction.confidence;
     }
   } catch (_) {
@@ -1536,7 +1553,7 @@ async function finalizeFollowup() {
 
   assessment.currentAnswers = updatedAnswers;
   assessment.finalScore = finalScore;
-  assessment.finalRisk = finalRisk;
+  assessment.finalRisk = normalizeRisk(mlRisk || finalRisk);
   assessment.mlRisk = mlRisk;
   assessment.mlConfidence = mlConfidence;
   assessment.followupComplete = true;
