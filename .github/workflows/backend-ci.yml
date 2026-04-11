@@ -5,6 +5,9 @@ on:
     branches: ["**"]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   backend:
     runs-on: ubuntu-latest
@@ -25,9 +28,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest
+          pip install httpx
 
       - name: Compile check
         run: python -m compileall app
 
       - name: Run tests
-        run: pytest -q
+        run: PYTHONPATH=. pytest -q

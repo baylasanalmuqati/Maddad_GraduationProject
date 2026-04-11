@@ -10,6 +10,7 @@ from sqlalchemy import (
     Enum,
     Float,
     ForeignKey,
+    Integer,
     JSON,
     SmallInteger,
     String,
@@ -26,6 +27,7 @@ from app.database import Base
 
 UserTypeEnum = Enum("parent", "child", name="user_type")
 RiskLevelEnum = Enum("low", "medium", "high", name="risk_level")
+IDType = BigInteger().with_variant(Integer, "sqlite")
 
 
 # ---------------------------------------------------------------------------
@@ -35,7 +37,7 @@ RiskLevelEnum = Enum("low", "medium", "high", name="risk_level")
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(BigInteger, primary_key=True, index=True)
+    id = Column(IDType, primary_key=True, index=True)
     user_type = Column(UserTypeEnum, nullable=False)
     email = Column(String(255), unique=True, nullable=False, index=True)
     password_hash = Column(String(255), nullable=False)
@@ -60,8 +62,8 @@ class User(Base):
 class ParentProfile(Base):
     __tablename__ = "parent_profiles"
 
-    id = Column(BigInteger, primary_key=True, index=True)
-    user_id = Column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
+    id = Column(IDType, primary_key=True, index=True)
+    user_id = Column(IDType, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
     occupation = Column(String(150), nullable=True)
     address = Column(String(255), nullable=True)
     city = Column(String(100), nullable=True)
@@ -84,8 +86,8 @@ class ParentProfile(Base):
 class Session(Base):
     __tablename__ = "sessions"
 
-    id = Column(BigInteger, primary_key=True, index=True)
-    user_id = Column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    id = Column(IDType, primary_key=True, index=True)
+    user_id = Column(IDType, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     session_token = Column(String(255), unique=True, nullable=False, index=True)
     ip_address = Column(String(45), nullable=True)
     user_agent = Column(Text, nullable=True)
@@ -102,8 +104,8 @@ class Session(Base):
 class QuestionnaireResult(Base):
     __tablename__ = "questionnaire_results"
 
-    id = Column(BigInteger, primary_key=True, index=True)
-    user_id = Column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    id = Column(IDType, primary_key=True, index=True)
+    user_id = Column(IDType, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     age_group = Column(String(10), nullable=False)
     gender = Column(String(10), nullable=False)
 

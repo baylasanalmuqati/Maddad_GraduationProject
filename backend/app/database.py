@@ -7,16 +7,17 @@ The database type is detected from the DATABASE_URL setting.
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
+from sqlalchemy.pool import StaticPool
 
 from app.config import settings
 
 # SQLite requires check_same_thread=False so that FastAPI's background
 # threads can share the same connection.  Other databases don't need it.
 if settings.DATABASE_URL.startswith("sqlite"):
-    engine = create_engine(
-        settings.DATABASE_URL,
-        connect_args={"check_same_thread": False},
-    )
+    sqlite_kwargs = {"connect_args": {"check_same_thread": False}}
+    if ":memory:" in settings.DATABASE_URL:
+        sqlite_kwargs["poolclass"] = StaticPool
+    engine = create_engine(settings.DATABASE_URL, **sqlite_kwargs)
 else:
     engine = create_engine(
         settings.DATABASE_URL,
