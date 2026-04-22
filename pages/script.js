@@ -1921,12 +1921,7 @@ function loadGrowthDetailPage() {
     actionBtn.onclick = function () {
       window.location.href = item.targetPage;
     };
-  } else if (item.cardType === "tip") {
-    actionBtn.textContent = "اقرأ المزيد";
-    actionBtn.onclick = function () {
-      alert("يمكنك تعديل هذه الصفحة لاحقًا لإضافة نصائح تفصيلية أكثر.");
-    };
-  } else {
+  }  else {
     actionBtn.textContent = "قيد التطوير";
     actionBtn.onclick = function () {
       alert("هذه اللعبة قيد التطوير وسيتم العمل عليها مستقبلاً.");
