@@ -1719,19 +1719,19 @@ const GAMES_AND_TIPS_DATA = [
     cardType: "tip",
     cardIcon: "../pictures/skill-tip.png",
     detailIcon: SKILL_ICONS.imitation,
-    detailText: "ابدئي بحركات سهلة مثل التصفيق أو التلويح، ثم شجعي الطفل على تقليدها مباشرة مع مدح فوري أو مكافأة بسيطة يحبها.",
+    detailText: "ابدأ بتقليد حركات طفلك وأصواته أثناء اللعب لكسر الجليد وبناء التفاعل المتبادل. ثم تدرج معه بطلب تقليد الحركات الكبرى (كالتصفيق) وصولاً للأصوات الدقيقة، مع مكافأته بحماس فور كل محاولة.",
     playable: false
   },
 
-  // ── التمييز — لعبة فقط ──
+  // ── التمييز - نصيحة فقط ──
   {
-    id: "game_discrimination",
+    id: "tip_discrimination",
     skillKey: "discrimination",
     title: "التمييز",
-    cardType: "game",
-    cardIcon: "../pictures/skill-game.png",
+    cardType: "tip",
+    cardIcon: "../pictures/skill-tip.png",
     detailIcon: SKILL_ICONS.discrimination,
-    detailText: "لعبة التمييز تساعد الطفل على التعرف على الأشكال والأشياء والمفاهيم اليومية من خلال أنشطة تفاعلية بسيطة وممتعة تدعم التفكير والتركيز.",
+    detailText: "درب طفلك على مطابقة الأشياء المتطابقة أولاً، ثم أضف (مشتتات) بالتدريج لرفع مستوى تركيزه. بادر بتوجيه يده نحو الإجابة الصحيحة في البدايات لتجنب إحباطه، ثم قلل مساعدتك له تدريجياً.",
     playable: false
   },
 
