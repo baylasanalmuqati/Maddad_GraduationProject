@@ -1921,12 +1921,7 @@ function loadGrowthDetailPage() {
     actionBtn.onclick = function () {
       window.location.href = item.targetPage;
     };
-  }  else {
-    actionBtn.textContent = "قيد التطوير";
-    actionBtn.onclick = function () {
-      alert("هذه اللعبة قيد التطوير وسيتم العمل عليها مستقبلاً.");
-    };
-  }
+  }  
 }
 
 
