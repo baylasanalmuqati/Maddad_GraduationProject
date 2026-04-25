@@ -999,22 +999,23 @@ let followupCollectedAnswers = {};
 let followupBtnState = {};
 
 const FOLLOWUP_STEPS_CONFIG = {
+
   eye_contact: {
     title: "متابعة: التواصل البصري",
-    question: "هل طفلك يناظر عينك؟",
+    question: "هل ينظر طفلك إلى عينيك؟",
     type: "checkbox",
     name: "eye_contact_context",
     options: [
-      { label: "لما يحتاج شيء", value: "needs" },
-      { label: "لما يلعب معك", value: "play" },
-      { label: "أثناء الأكل", value: "eating" },
-      { label: "أثناء اللبس", value: "dressing" },
-      { label: "عندما تقرأ له قصة", value: "story" },
-      { label: "عندما تتحدث معه", value: "talking" }
+      { label: "عند حاجته لشيء", value: "needs" },
+      { label: "أثناء اللعب معك", value: "play" },
+      { label: "أثناء تناول الطعام", value: "eating" },
+      { label: "أثناء ارتداء الملابس", value: "dressing" },
+      { label: "عند قراءة قصة له", value: "story" },
+      { label: "عند التحدث معه", value: "talking" }
     ],
     subQuestion: {
       id: "eyeSubBox",
-      title: "لما أنت وطفلك سوا خلال اليوم، هل ينظر إلى عينك على الأقل 5 ثوانٍ؟",
+      title: "عندما تكون مع طفلك خلال اليوم، هل ينظر إلى عينيك لمدة لا تقل عن خمس ثوانٍ؟",
       name: "eye_contact_sub"
     }
   },
@@ -1065,7 +1066,7 @@ facial_expressions: {
     ],
     subQuestion: {
       id: "pointSubBox",
-      title: 'إذا قلت له "وريني"، هل سيشير طفلك إلى الشيء؟',
+      title: 'إذا قلت له "أرِني"، هل يشير طفلك إلى الشيء؟',
       name: "pointing_sub"
     }
   },
