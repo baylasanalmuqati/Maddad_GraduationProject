@@ -1574,7 +1574,7 @@ const ALL_SKILLS_DATA = [
     icon: "../skills-icons/eye_contact.png",
     detailText: "هذه اللعبة مصممة لمساعدة الأطفال على تحسين التواصل البصري من خلال أنشطة تفاعلية ممتعة. يستمع الطفل للتعليمات وينفذ المهام ويحصل على تعزيزات عند التفاعل الصحيح.",
     playable: true,
-    targetPage: "../eye_contact_game/index.html"
+    targetPage: ""../eye_contact_game/index.html""
   },
   {
     key: "social_smile",
