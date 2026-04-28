@@ -1,0 +1,109 @@
+{
+    "qTableSerialization": [
+        {
+            "behaviouralState": 0,
+            "stateValues": [
+                {
+                    "action": 0,
+                    "value": 13.373738288879395
+                },
+                {
+                    "action": 1,
+                    "value": 0.0
+                },
+                {
+                    "action": 2,
+                    "value": 0.0
+                },
+                {
+                    "action": 3,
+                    "value": 0.0
+                }
+            ]
+        },
+        {
+            "behaviouralState": 1,
+            "stateValues": [
+                {
+                    "action": 0,
+                    "value": 0.27180683612823489
+                },
+                {
+                    "action": 1,
+                    "value": 11.534601211547852
+                },
+                {
+                    "action": 2,
+                    "value": 0.0
+                },
+                {
+                    "action": 3,
+                    "value": 0.0
+                }
+            ]
+        },
+        {
+            "behaviouralState": 2,
+            "stateValues": [
+                {
+                    "action": 0,
+                    "value": -0.349200040102005
+                },
+                {
+                    "action": 1,
+                    "value": -0.4999285936355591
+                },
+                {
+                    "action": 2,
+                    "value": 1.4359334707260132
+                },
+                {
+                    "action": 3,
+                    "value": 9.226895332336426
+                }
+            ]
+        },
+        {
+            "behaviouralState": 3,
+            "stateValues": [
+                {
+                    "action": 0,
+                    "value": -0.9464074373245239
+                },
+                {
+                    "action": 1,
+                    "value": -0.9836983680725098
+                },
+                {
+                    "action": 2,
+                    "value": 10.164376258850098
+                },
+                {
+                    "action": 3,
+                    "value": 0.0
+                }
+            ]
+        },
+        {
+            "behaviouralState": 4,
+            "stateValues": [
+                {
+                    "action": 0,
+                    "value": -2.1201767921447756
+                },
+                {
+                    "action": 1,
+                    "value": -0.3793080151081085
+                },
+                {
+                    "action": 2,
+                    "value": -0.8760000467300415
+                },
+                {
+                    "action": 3,
+                    "value": 8.4088773727417
+                }
+            ]
+        }
+    ]
+}
