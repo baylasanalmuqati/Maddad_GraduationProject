@@ -748,9 +748,15 @@ async function finishQuestionnaire() {
    RESULT PAGE
 ========================= */
 
-function loadResultPage() {
+async function loadResultPage() {
 
-  const assessment = getAssessment();
+  let assessment = null;
+
+  try {
+    assessment = await apiGetLatestAssessment();
+  } catch (_) {
+    assessment = getAssessment(); // fallback
+  }
 
   if (!assessment) {
     window.location.href = "questionnaire.html";
@@ -765,13 +771,12 @@ function loadResultPage() {
   const resultMainBtn = document.getElementById("resultMainBtn");
   const resultSecondaryBtn = document.getElementById("resultSecondaryBtn");
 
-  let shownRisk = assessment.initialRisk;
-  let shownScore = assessment.initialScore;
+  // 🔥 هنا التعديل المهم: دعم DB + local
+  let shownRisk = (assessment.risk || assessment.finalRisk || assessment.initialRisk || "").toLowerCase();
+  let shownScore = assessment.score ?? assessment.finalScore ?? assessment.initialScore;
 
-  if (assessment.followupComplete) {
-    shownRisk = assessment.finalRisk;
-    shownScore = assessment.finalScore;
-  }
+  const followupComplete =
+    assessment.followup_complete ?? assessment.followupComplete;
 
   resultMainCard.classList.remove("low-theme", "medium-theme", "high-theme");
 
@@ -789,7 +794,7 @@ function loadResultPage() {
     resultTitle.textContent =
       "نبشرك طفلك بخير ولا تظهر عليه علامات تدعو القلق";
 
-    if (assessment.followupComplete) {
+    if (followupComplete) {
       resultText.textContent =
         "هذه النتيجة النهائية بعد أسئلة المتابعة والتي ساعدت في الوصول إلى تقييم أدق.";
     } else {
@@ -839,7 +844,7 @@ function loadResultPage() {
     resultTitle.textContent =
       "تشير النتائج إلى وجود علامات قد تشير إلى احتمالية أعلى للتوحد";
 
-    if (assessment.followupComplete) {
+    if (followupComplete) {
 
       resultText.textContent =
         "هذه النتيجة النهائية بعد أسئلة المتابعة والتي ساعدت في الوصول إلى تصنيف أكثر دقة.";
@@ -860,8 +865,12 @@ function loadResultPage() {
 
 
 
-  // ── نقاط النمو: المهارات الفاشلة — فقط إذا لم تكن النتيجة منخفضة ──
-  const failedSkills = assessment.failedSkills || [];
+  // 🔥 دعم failed skills من DB
+  const failedSkills =
+    assessment.failed_skills ||
+    assessment.failedSkills ||
+    [];
+
   const failedSkillsHTML = (shownRisk !== "low" && failedSkills.length > 0)
     ? `<div class="result-failed-skills">
         <strong>المهارات التي تحتاج متابعة:</strong>
@@ -876,7 +885,7 @@ function loadResultPage() {
   resultSummary.innerHTML = `
     <div class="result-summary-grid">
       <span class="result-summary-label">العمر</span>
-      <span class="result-summary-val">${assessment.ageGroup} شهر</span>
+      <span class="result-summary-val">${assessment.age_group || assessment.ageGroup} شهر</span>
       <span class="result-summary-label">مستوى الاحتمالية</span>
       <span class="result-summary-val">${riskTextArabic(shownRisk)}</span>
     </div>
@@ -884,7 +893,6 @@ function loadResultPage() {
     ${mlLine}
   `;
 
-  // ── تذكير الاحتمالية المتوسطة ──────────────────────
   if (shownRisk === "medium") {
     _checkMediumReminder();
   }
@@ -1526,11 +1534,11 @@ async function finalizeFollowup() {
   const updatedAnswers = { ...assessment.currentAnswers, ...followupCollectedAnswers };
   const finalScore = calculateScore(updatedAnswers);
   const finalRisk = classifyRisk(assessment.ageGroup, finalScore);
+  const finalFailedSkills = getFailedSkills(updatedAnswers);
 
   let mlRisk = finalRisk;
   let mlConfidence = null;
 
-  // Request refined ML prediction from the backend
   try {
     if (assessment.resultId) {
       const apiResult = await apiSubmitFollowup(assessment.resultId, followupCollectedAnswers);
@@ -1552,24 +1560,17 @@ async function finalizeFollowup() {
   assessment.currentAnswers = updatedAnswers;
   assessment.finalScore = finalScore;
   assessment.finalRisk = finalRisk;
+  assessment.failedSkills = finalFailedSkills;
   assessment.mlRisk = mlRisk;
   assessment.mlConfidence = mlConfidence;
   assessment.followupComplete = true;
 
-  let history = JSON.parse(localStorage.getItem("maddadHistory")) || [];
-
-  history.push({
-    date: new Date().toLocaleDateString("ar-SA"),
-    risk: riskTextArabic(mlRisk || finalRisk),
-    score: finalScore
-  });
-
-  localStorage.setItem("maddadHistory", JSON.stringify(history));
-
+  // Cache only for result page fallback/navigation.
+  // The main source is the database through apiSubmitFollowup + apiGetLatestAssessment.
   saveAssessment(assessment);
+
   window.location.href = "result.html";
 }
-
 // (duplicate removed — handled above)
 
 /* =========================
@@ -1822,7 +1823,13 @@ const GAMES_AND_TIPS_DATA = [
 
 let currentGrowthFilter = "all";
 
-function loadGamesPage() {
+async function loadGamesPage() {
+  try {
+    window.latestAssessment = await apiGetLatestAssessment();
+  } catch (_) {
+    window.latestAssessment = getAssessment();
+  }
+
   renderGrowthItems("all");
 }
 
@@ -1840,8 +1847,8 @@ function renderGrowthItems(filter) {
   if (!container) return;
 
   // Get failed skills from assessment
-  const assessment = getAssessment();
-  const failedSkills = assessment?.failedSkills || [];
+ const assessment = window.latestAssessment || null;
+ const failedSkills = assessment?.failed_skills || assessment?.failedSkills || [];
 
   let items = [];
 
@@ -2405,9 +2412,9 @@ function goDashboard() {
   window.location.href = "dashboard.html";
 }
 
-function loadDashboardPage() {
-  const assessment = getAssessment();
-  const history = JSON.parse(localStorage.getItem("maddadHistory") || "[]");
+async function loadDashboardPage() {
+ const assessment = await apiGetLatestAssessment();
+ const history = await apiGetHistory();
 
   if (!assessment) {
     window.location.href = "questionnaire.html";
