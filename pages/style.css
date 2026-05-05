@@ -3566,3 +3566,153 @@ html, body{
     font-size: 22px;
   }
 }
+/* ── Child Games Lock System ── */
+.child-game-locked {
+  position: relative;
+  cursor: pointer;
+  opacity: 0.85;
+}
+
+.child-game-locked:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(60,82,116,0.10);
+}
+
+.child-game-lock-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #888780;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+.child-game-request-btn {
+  display: block;
+  margin: 8px auto 0;
+  font-size: 12px;
+  padding: 5px 16px;
+  border-radius: 20px;
+  background: #EEEDFE;
+  color: #3C3489;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+}
+
+.child-game-request-btn:hover {
+  background: #CECBF6;
+}
+/* ── Icon Box Button ── */
+.icon-box-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: rgba(255,255,255,0.90);
+  border-radius: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7fa8;
+  box-shadow: 0 4px 12px rgba(60,82,116,0.10);
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+  font-family: inherit;
+}
+.icon-box-btn:hover {
+  background: #EEEDFE;
+  color: #3C3489;
+  box-shadow: 0 6px 18px rgba(60,50,137,0.14);
+  transform: translateY(-1px);
+}
+
+/* ── Child Games Lock System ── */
+.child-game-locked {
+  position: relative;
+  cursor: pointer;
+  opacity: 0.85;
+}
+.child-game-locked:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(60,82,116,0.10);
+}
+.child-game-lock-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #888780;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+.child-game-request-btn {
+  display: block;
+  margin: 8px auto 0;
+  font-size: 12px;
+  padding: 5px 16px;
+  border-radius: 20px;
+  background: #EEEDFE;
+  color: #3C3489;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+}
+.child-game-request-btn:hover {
+  background: #CECBF6;
+}
+
+/* ── Permissions Page ── */
+.perm-card {
+  background: #fff;
+  border: 1.5px solid #e8eef7;
+  border-radius: 16px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  box-shadow: 0 4px 12px rgba(60,82,116,0.06);
+}
+.perm-pending { border-color: #c8d8f0; background: #fafdff; }
+.perm-approved { border-color: #c6e6c6; background: #f7fbf7; opacity: 0.85; }
+.perm-rejected { border-color: #f2cccc; background: #fff8f8; opacity: 0.75; }
+.perm-card-info { display: flex; align-items: center; gap: 14px; }
+.perm-lock-icon {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  background: #EEEDFE;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.perm-game-title { font-size: 15px; font-weight: 700; color: #3c5274; }
+.perm-date { font-size: 12px; color: #888; margin-top: 3px; }
+.perm-card-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.perm-btn {
+  padding: 7px 18px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  transition: opacity 0.2s;
+}
+.perm-btn:hover { opacity: 0.85; }
+.perm-approve { background: #3C3489; color: #fff; }
+.perm-reject { background: #f0f0f0; color: #666; }
+.perm-status-badge {
+  font-size: 12px; font-weight: 700;
+  padding: 4px 14px; border-radius: 20px; flex-shrink: 0;
+}
+.badge-approved { background: #EAF3DE; color: #3B6D11; }
+.badge-rejected { background: #fce8e6; color: #c0392b; }
