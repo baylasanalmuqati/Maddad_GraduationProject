@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.database import Base, engine
-from app.routers import auth, followup, profile, questionnaire, game
+from app.routers import auth, followup, profile, questionnaire
 
 # Import all models so SQLAlchemy registers them with Base.metadata
 import app.models  # noqa: F401
@@ -55,7 +55,7 @@ app.include_router(auth.router)
 app.include_router(profile.router)
 app.include_router(questionnaire.router)
 app.include_router(followup.router)
-app.include_router(game.router)
+
 
 # ---------------------------------------------------------------------------
 # Health check
