@@ -6,100 +6,37 @@
   <title>مدد | صفحة الطفل</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body class="growth-page-body" onload="loadChildGamesPage()">
+<body class="child-games-body" onload="loadChildGamesPage()">
 
-  <div class="growth-shell">
+  <div class="child-games-shell">
 
-    <header class="growth-topbar">
-      <img src="../pictures/logo.png" class="growth-top-logo" alt="شعار مدد"
-        onclick="window.location.href='home-new.html'" style="cursor:pointer;" />
-  <div class="growth-top-actions">
-  <button class="icon-box-btn" onclick="logout()" aria-label="تسجيل الخروج" title="تسجيل الخروج">
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-      fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-      <polyline points="16 17 21 12 16 7"/>
-      <line x1="21" y1="12" x2="9" y2="12"/>
-    </svg>
-  </button>
-        <button onclick="openParentModeModal()" style="display:flex; align-items:center; gap:6px; padding:7px 16px; border-radius:30px; font-size:13px; font-weight:600; color:#3C3489; background:#EEEDFE; border:none; cursor:pointer; font-family:inherit;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-            <circle cx="12" cy="7" r="4"/>
-          </svg>
-          وضع ولي الأمر
-        </button>
-      </div>
+    <!-- Top Bar -->
+    <header class="child-games-topbar">
+      <button class="child-games-logout-btn" onclick="logout()" aria-label="تسجيل الخروج">⎋</button>
+      <img src="../pictures/logo.png" class="child-games-top-logo" alt="شعار مدد" />
     </header>
 
-    <main class="growth-main-layout" style="padding:0;">
-      <section class="growth-main-card" style="margin:0; border-radius:20px;">
-        <div class="growth-card-header">
-          <h1 class="growth-title">الألعاب</h1>
+    <!-- Main -->
+    <main class="child-games-main-wrap">
+      <section class="child-games-main-card">
+
+        <h1 class="child-games-title">الألعاب</h1>
+
+        <div class="child-games-tabs">
+          <button class="child-games-tab active" onclick="setChildGamesFilter('all', this)">الألعاب</button>
+          <button class="child-games-tab" onclick="setChildGamesFilter('growth', this)">نقاط النمو</button>
         </div>
-        <div class="growth-scroll-box">
-          <div id="childGamesGrid" class="growth-items-grid"></div>
+
+        <div class="child-games-scroll-box">
+          <div id="childGamesGrid" class="child-games-grid"></div>
         </div>
+
       </section>
     </main>
-  </div>
 
-  <!-- Modal طلب الإذن -->
-  <div id="childPermissionModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.35); z-index:999; align-items:center; justify-content:center;">
-    <div style="background:#fff; border-radius:20px; padding:28px 28px 22px; width:320px; text-align:center; font-family:inherit; direction:rtl; position:relative;">
-      <button onclick="closePermissionModal()" style="position:absolute; top:14px; left:14px; width:30px; height:30px; border-radius:50%; border:1px solid #e0e0e0; background:#f5f5f5; cursor:pointer; font-size:16px; color:#888; display:flex; align-items:center; justify-content:center; font-family:inherit;">✕</button>
-      <div style="margin-bottom:14px; display:flex; justify-content:center;">
-        <div style="width:54px; height:54px; border-radius:50%; background:#EEEDFE; display:flex; align-items:center; justify-content:center;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="#3C3489">
-            <path d="M18 10h-1V7A5 5 0 0 0 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2zm-6 7a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3-7H9V7a3 3 0 0 1 6 0v3z"/>
-          </svg>
-        </div>
-      </div>
-      <h2 id="childPermissionModalTitle" style="font-size:17px; font-weight:600; margin-bottom:10px; color:#1F1F27;">اللعبة مقفلة</h2>
-      <p id="childPermissionMsg" style="font-size:14px; color:#666; margin-bottom:20px; line-height:1.6;">
-        تحتاج إلى إذن من ولي الأمر لفتح هذه اللعبة. هل تريد إرسال طلب؟
-      </p>
-      <div id="childPermissionSent" style="display:none; font-size:14px; color:#3B6D11; background:#EAF3DE; border-radius:10px; padding:10px; margin-bottom:16px;">
-        تم إرسال الطلب إلى ولي الأمر
-      </div>
-      <div id="childPermissionModalActions" style="display:flex; gap:10px; justify-content:center;">
-        <button onclick="confirmPermissionRequest()" style="padding:9px 22px; border-radius:30px; background:#3C3489; color:white; border:none; font-size:14px; cursor:pointer; font-family:inherit;">أرسل طلب</button>
-        <button onclick="closePermissionModal()" style="padding:9px 22px; border-radius:30px; background:transparent; color:#666; border:1px solid #ccc; font-size:14px; cursor:pointer; font-family:inherit;">رجوع</button>
-      </div>
-      <div id="childPermissionCloseBtn" style="display:none; margin-top:14px;">
-        <button onclick="closePermissionModal()" style="padding:9px 28px; border-radius:30px; background:#f0f0f0; color:#444; border:none; font-size:14px; cursor:pointer; font-family:inherit;">إغلاق</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal وضع ولي الأمر -->
-  <div id="parentModeModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
-    <div style="background:#fff; border-radius:20px; padding:30px 28px 24px; width:320px; text-align:center; font-family:inherit; direction:rtl; position:relative;">
-      <button onclick="closeParentModeModal()" style="position:absolute; top:14px; left:14px; width:30px; height:30px; border-radius:50%; border:1px solid #e0e0e0; background:#f5f5f5; cursor:pointer; font-size:16px; color:#888; display:flex; align-items:center; justify-content:center; font-family:inherit;">✕</button>
-      <div style="margin-bottom:14px; display:flex; justify-content:center;">
-        <div style="width:54px; height:54px; border-radius:50%; background:#EEEDFE; display:flex; align-items:center; justify-content:center;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3C3489" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-            <circle cx="12" cy="7" r="4"/>
-          </svg>
-        </div>
-      </div>
-      <h2 style="font-size:17px; font-weight:600; margin-bottom:6px; color:#1F1F27;">وضع ولي الأمر</h2>
-      <p style="font-size:13px; color:#888; margin-bottom:18px;">أدخل كلمة المرور للدخول</p>
-      <input id="parentModePassword" type="password" placeholder="كلمة المرور"
-        style="width:100%; padding:10px 14px; border-radius:12px; border:1.5px solid #dde3ee; font-size:14px; font-family:inherit; text-align:right; outline:none; margin-bottom:10px; box-sizing:border-box;"
-        onkeydown="if(event.key==='Enter') verifyParentMode()" />
-      <div id="parentModeError" style="display:none; font-size:12px; color:#e74c3c; margin-bottom:10px;">كلمة المرور غير صحيحة</div>
-      <div id="parentModeLoading" style="display:none; font-size:12px; color:#888; margin-bottom:10px;">جارٍ التحقق...</div>
-      <div style="display:flex; gap:10px; justify-content:center; margin-top:6px;">
-        <button onclick="verifyParentMode()" style="padding:9px 26px; border-radius:30px; background:#3C3489; color:white; border:none; font-size:14px; cursor:pointer; font-family:inherit; font-weight:600;">دخول</button>
-        <button onclick="closeParentModeModal()" style="padding:9px 22px; border-radius:30px; background:transparent; color:#666; border:1px solid #ccc; font-size:14px; cursor:pointer; font-family:inherit;">إلغاء</button>
-      </div>
-    </div>
   </div>
 
   <script src="api.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
-
