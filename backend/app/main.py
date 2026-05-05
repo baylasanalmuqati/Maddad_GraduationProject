@@ -64,3 +64,6 @@ app.include_router(followup.router)
 @app.get("/health", tags=["health"])
 def health_check():
     return {"status": "ok"}
+@app.get("/force-check")
+def force_check():
+    return {"status": "new code working"}
