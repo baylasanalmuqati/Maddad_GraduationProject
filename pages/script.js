@@ -264,7 +264,19 @@ async function parentLogin() {
       localStorage.setItem("maddadAccount", JSON.stringify(account));
       localStorage.setItem("maddadLoggedIn", "true");
     }
-    window.location.href = "home-login.html";
+    // Check if this user already has an assessment
+    const currentAccount = JSON.parse(localStorage.getItem("maddadAccount"));
+    const assessment = JSON.parse(localStorage.getItem("maddadAssessment") || "null");
+    const assessmentEmail = localStorage.getItem("maddadAssessmentEmail");
+    if (assessment && assessmentEmail === (currentAccount?.email || email)) {
+      window.location.href = "home-login.html";
+    } else {
+      localStorage.removeItem("maddadAssessment");
+      localStorage.removeItem("maddadAssessmentEmail");
+      localStorage.removeItem("maddadHistory");
+      localStorage.removeItem("maddadQuestionnaireProgress");
+      window.location.href = "home-new.html";
+    }
     return;
   } catch (err) {
     if (err.status === 401 || err.status === 403) {
@@ -274,7 +286,13 @@ async function parentLogin() {
     // Backend unavailable – check whether a cached session exists for this email
     const savedAccount = JSON.parse(localStorage.getItem("maddadAccount"));
     if (savedAccount && email === savedAccount.email && localStorage.getItem("maddadLoggedIn") === "true") {
-      window.location.href = "home-login.html";
+      const assessment = JSON.parse(localStorage.getItem("maddadAssessment") || "null");
+      const assessmentEmail = localStorage.getItem("maddadAssessmentEmail");
+      if (assessment && assessmentEmail === email) {
+        window.location.href = "home-login.html";
+      } else {
+        window.location.href = "home-new.html";
+      }
     } else {
       alert("تعذّر الوصول إلى الخادم. يرجى التحقق من الاتصال بالإنترنت والمحاولة مرة أخرى.");
     }
@@ -375,8 +393,11 @@ function getAssessment() {
 
 function saveAssessment(data) {
   localStorage.setItem("maddadAssessment", JSON.stringify(data));
+  const account = JSON.parse(localStorage.getItem("maddadAccount") || "{}");
+  if (account.email) {
+    localStorage.setItem("maddadAssessmentEmail", account.email);
+  }
 }
-
 function startQuestionnaire() {
   localStorage.removeItem("maddadQuestionnaireProgress");
   localStorage.removeItem("maddadAssessment");
@@ -1843,7 +1864,7 @@ function renderGrowthItems(filter) {
         const skillNames = failedSkills.map(s => skillLabelsArabic[s] || s).join("، ");
         infoBox.innerHTML = `
           <div class="growth-info-msg">
-            <span class="growth-info-icon">💡</span>
+            <span class="growth-info-icon"> </span>
             <div>
               <strong>مهارات طفلك التي تحتاج تطوير:</strong> ${skillNames}<br>
               <span>الألعاب والنصائح أدناه مصممة خصيصاً لمساعدة طفلك على تطوير هذه المهارات</span>
@@ -1852,7 +1873,7 @@ function renderGrowthItems(filter) {
       } else {
         infoBox.innerHTML = `
           <div class="growth-info-msg" style="background:#edf7ed;border-color:#27AE60;color:#1a6b30;">
-            <span class="growth-info-icon">✅</span>
+            <span class="growth-info-icon"> </span>
             <div>طفلك أظهر أداءً جيداً في جميع المهارات. يمكنك تصفح الألعاب والنصائح لتعزيز نموه</div>
           </div>`;
       }
@@ -2103,9 +2124,168 @@ function renderChildGames(filter) {
   `).join("");
 }
 
+function getPermissionsKey() {
+  const account = JSON.parse(localStorage.getItem("maddadAccount") || "{}");
+  return "maddadGamePermissions_" + (account.email || "default");
+}
+
+function getRequestsKey() {
+  const account = JSON.parse(localStorage.getItem("maddadAccount") || "{}");
+  return "maddadPermissionRequests_" + (account.email || "default");
+}
+
+function renderChildGames(filter) {
+  const container = document.getElementById("childGamesGrid");
+  if (!container) return;
+
+  const assessment = getAssessment();
+
+  const weakSkills = assessment?.followupComplete
+    ? Object.keys(assessment.currentAnswers || {}).filter(key => Number(assessment.currentAnswers[key]) === 1)
+    : Object.keys(assessment?.initialAnswers || {}).filter(key => Number(assessment.initialAnswers[key]) === 1);
+
+  let items = [];
+
+  if (filter === "all") {
+    items = GAMES_AND_TIPS_DATA.filter(item => item.cardType === "game");
+  } else if (filter === "growth") {
+    items = GAMES_AND_TIPS_DATA.filter(
+      item => item.cardType === "game" && weakSkills.includes(item.skillKey)
+    );
+  }
+
+  if (!items.length) {
+    container.innerHTML = `
+      <div style="grid-column:1/-1; text-align:center; padding:40px 20px; color:#666F82; font-size:18px;">
+        لا توجد ألعاب متاحة حاليًا في هذا القسم.
+      </div>
+    `;
+    return;
+  }
+
+  const permissions = JSON.parse(localStorage.getItem(getPermissionsKey()) || "{}");
+
+  container.innerHTML = items.map(item => {
+    const isAllowed = permissions[item.id] === true;
+    const icon = (SKILL_ICONS && SKILL_ICONS[item.skillKey]) ? SKILL_ICONS[item.skillKey] : "../pictures/skill-game.png";
+    if (isAllowed) {
+      return `
+        <button class="growth-item-card" onclick="openChildGrowthDetail('${item.id}')">
+          <div class="growth-card-icon-wrap" style="background:#edf1f7;">
+            <img src="${icon}" alt="${item.title}" class="growth-skill-icon" onerror="this.style.display='none'" />
+          </div>
+          <div class="growth-card-badge" style="background:#3c5274;">لعبة</div>
+          <div class="growth-item-title">${item.title}</div>
+        </button>`;
+    } else {
+      return `
+        <div class="growth-item-card child-game-locked" onclick="requestGamePermission('${item.id}', '${item.title}')">
+          <div class="child-game-lock-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="white">
+              <path d="M18 10h-1V7A5 5 0 0 0 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2zm-6 7a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3-7H9V7a3 3 0 0 1 6 0v3z"/>
+            </svg>
+          </div>
+          <div class="growth-card-icon-wrap" style="background:#edf1f7; opacity:0.45; filter:grayscale(0.4);">
+            <img src="${icon}" alt="${item.title}" class="growth-skill-icon" onerror="this.style.display='none'" />
+          </div>
+          <div class="growth-card-badge" style="background:#a0aab8;">لعبة</div>
+          <div class="growth-item-title" style="opacity:0.55;">${item.title}</div>
+          <button class="child-game-request-btn" onclick="event.stopPropagation(); requestGamePermission('${item.id}', '${item.title}')">اطلب إذن</button>
+        </div>`;
+    }
+  }).join("");
+}
+
 function openChildGrowthDetail(itemId) {
+  const permissions = JSON.parse(localStorage.getItem(getPermissionsKey()) || "{}");
+  if (permissions[itemId] !== true) {
+    const item = GAMES_AND_TIPS_DATA.find(x => x.id === itemId);
+    requestGamePermission(itemId, item ? item.title : "");
+    return;
+  }
+  const item = GAMES_AND_TIPS_DATA.find(x => x.id === itemId && x.cardType === "game");
+  if (item && item.playable && item.targetPage) {
+    window.location.href = item.targetPage;
+    return;
+  }
   localStorage.setItem("maddadSelectedChildGame", itemId);
   window.location.href = "child-growth-detail.html";
+}
+
+function requestGamePermission(itemId, itemTitle) {
+  const modal = document.getElementById("childPermissionModal");
+  if (!modal) return;
+  document.getElementById("childPermissionModalTitle").textContent = (itemTitle || "اللعبة") + " — مقفلة";
+  document.getElementById("childPermissionMsg").style.display = "block";
+  document.getElementById("childPermissionSent").style.display = "none";
+  document.getElementById("childPermissionModalActions").style.display = "flex";
+  document.getElementById("childPermissionCloseBtn").style.display = "none";
+  modal.dataset.gameId = itemId;
+  modal.style.display = "flex";
+}
+
+function confirmPermissionRequest() {
+  const modal = document.getElementById("childPermissionModal");
+  const gameId = modal ? modal.dataset.gameId : "";
+  const gameTitle = document.getElementById("childPermissionModalTitle")?.textContent.replace(" — مقفلة", "") || "";
+  const requests = JSON.parse(localStorage.getItem(getRequestsKey()) || "[]");
+  const exists = requests.find(r => r.gameId === gameId && r.status === "pending");
+  if (!exists && gameId) {
+    requests.push({ gameId, gameTitle, status: "pending", requestedAt: new Date().toISOString() });
+    localStorage.setItem(getRequestsKey(), JSON.stringify(requests));
+  }
+  document.getElementById("childPermissionMsg").style.display = "none";
+  document.getElementById("childPermissionSent").style.display = "block";
+  document.getElementById("childPermissionModalActions").style.display = "none";
+  document.getElementById("childPermissionCloseBtn").style.display = "block";
+}
+
+function closePermissionModal() {
+  document.getElementById("childPermissionModal").style.display = "none";
+}
+
+function openParentModeModal() {
+  const modal = document.getElementById("parentModeModal");
+  if (!modal) return;
+  document.getElementById("parentModePassword").value = "";
+  document.getElementById("parentModeError").style.display = "none";
+  document.getElementById("parentModeLoading").style.display = "none";
+  modal.style.display = "flex";
+  setTimeout(() => document.getElementById("parentModePassword").focus(), 100);
+}
+
+function closeParentModeModal() {
+  const modal = document.getElementById("parentModeModal");
+  if (modal) modal.style.display = "none";
+}
+
+async function verifyParentMode() {
+  const input = document.getElementById("parentModePassword");
+  const errorEl = document.getElementById("parentModeError");
+  const loadingEl = document.getElementById("parentModeLoading");
+  const enteredPassword = input ? input.value.trim() : "";
+  if (!enteredPassword) {
+    errorEl.style.display = "block";
+    errorEl.textContent = "الرجاء إدخال كلمة المرور";
+    return;
+  }
+  errorEl.style.display = "none";
+  loadingEl.style.display = "block";
+  const account = JSON.parse(localStorage.getItem("maddadAccount") || "{}");
+  try {
+    const result = await apiLogin(account.email || "", enteredPassword);
+    if (result) {
+      loadingEl.style.display = "none";
+      closeParentModeModal();
+      window.location.href = "games.html";
+      return;
+    }
+  } catch (err) {}
+  loadingEl.style.display = "none";
+  errorEl.style.display = "block";
+  errorEl.textContent = "كلمة المرور غير صحيحة";
+  input.value = "";
+  input.focus();
 }
 
 /* =========================
@@ -2357,4 +2537,83 @@ function loadDashboardPage() {
   } else if (trendText) {
     trendText.textContent = "";
   }
+  
 }
+/* =========================
+   PERMISSIONS PAGE (ولي الأمر)
+========================= */
+
+function loadPermissionsPage() {
+  const loggedIn = localStorage.getItem("maddadLoggedIn");
+  if (loggedIn !== "true") { window.location.href = "child-login.html"; return; }
+  renderPermissionRequests();
+}
+
+function renderPermissionRequests() {
+  const container = document.getElementById("permissionsContainer");
+  if (!container) return;
+  const requests = JSON.parse(localStorage.getItem(getRequestsKey()) || "[]");
+  const pending = requests.filter(r => r.status === "pending");
+  const decided = requests.filter(r => r.status !== "pending");
+  if (!requests.length) {
+    container.innerHTML = `<div style="text-align:center; padding:60px 20px; color:#888; font-size:16px;">لا توجد طلبات إذن حتى الآن</div>`;
+    return;
+  }
+  let html = "";
+  if (pending.length) {
+    html += `<h2 style="font-size:16px; font-weight:600; color:#3c5274; margin:0 0 14px; padding-bottom:8px; border-bottom:1px solid #e8eef7;">طلبات معلقة (${pending.length})</h2>`;
+    html += pending.map(r => `
+      <div class="perm-card perm-pending">
+        <div class="perm-card-info">
+          <div class="perm-lock-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#3C3489"><path d="M18 10h-1V7A5 5 0 0 0 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2zm-6 7a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3-7H9V7a3 3 0 0 1 6 0v3z"/></svg></div>
+          <div><div class="perm-game-title">${r.gameTitle}</div><div class="perm-date">طُلب في: ${formatPermDate(r.requestedAt)}</div></div>
+        </div>
+        <div class="perm-card-actions">
+          <button class="perm-btn perm-approve" onclick="approvePermission('${r.gameId}')">موافقة</button>
+          <button class="perm-btn perm-reject" onclick="rejectPermission('${r.gameId}')">رفض</button>
+        </div>
+      </div>`).join("");
+  }
+  if (decided.length) {
+    html += `<h2 style="font-size:16px; font-weight:600; color:#888; margin:24px 0 14px; padding-bottom:8px; border-bottom:1px solid #e8eef7;">الطلبات السابقة</h2>`;
+    html += decided.map(r => `
+      <div class="perm-card ${r.status === 'approved' ? 'perm-approved' : 'perm-rejected'}">
+        <div class="perm-card-info">
+          <div class="perm-lock-icon" style="background:${r.status === 'approved' ? '#EAF3DE' : '#fce8e6'};"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${r.status === 'approved' ? '#3B6D11' : '#c0392b'}" stroke-width="2.5">${r.status === 'approved' ? '<path d="M20 6L9 17l-5-5"/>' : '<path d="M18 6L6 18M6 6l12 12"/>'}</svg></div>
+          <div><div class="perm-game-title">${r.gameTitle}</div><div class="perm-date">${r.status === 'approved' ? 'تمت الموافقة' : 'تم الرفض'}</div></div>
+        </div>
+        <span class="perm-status-badge ${r.status === 'approved' ? 'badge-approved' : 'badge-rejected'}">${r.status === 'approved' ? 'مفتوحة' : 'مرفوضة'}</span>
+      </div>`).join("");
+  }
+  container.innerHTML = html;
+}
+
+function approvePermission(gameId) {
+  let requests = JSON.parse(localStorage.getItem(getRequestsKey()) || "[]");
+  requests = requests.filter(r => r.gameId !== gameId);
+  requests.push({ gameId, gameTitle: gameId, status: "approved", requestedAt: new Date().toISOString() });
+  localStorage.setItem(getRequestsKey(), JSON.stringify(requests));
+  const permissions = JSON.parse(localStorage.getItem(getPermissionsKey()) || "{}");
+  permissions[gameId] = true;
+  localStorage.setItem(getPermissionsKey(), JSON.stringify(permissions));
+  renderPermissionRequests();
+}
+
+function rejectPermission(gameId) {
+  let requests = JSON.parse(localStorage.getItem(getRequestsKey()) || "[]");
+  const existing = requests.find(r => r.gameId === gameId);
+  requests = requests.filter(r => r.gameId !== gameId);
+  requests.push({ gameId, gameTitle: existing?.gameTitle || gameId, status: "rejected", requestedAt: new Date().toISOString() });
+  localStorage.setItem(getRequestsKey(), JSON.stringify(requests));
+  const permissions = JSON.parse(localStorage.getItem(getPermissionsKey()) || "{}");
+  permissions[gameId] = false;
+  localStorage.setItem(getPermissionsKey(), JSON.stringify(permissions));
+  renderPermissionRequests();
+}
+
+function formatPermDate(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  return d.toLocaleDateString("ar-SA", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
+}
+
