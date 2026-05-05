@@ -3,14 +3,12 @@ from pydantic import BaseModel
 
 router = APIRouter()
 
-class GameData(BaseModel):
-    accuracy: float
-    response_time: float
-    reward: float
-    rl_state: str
-    rl_action: str
+class GameLevelData(BaseModel):
+    child_id: int
+    game_name: str
+    level: int
 
 @router.post("/game-progress")
-def receive_game_data(data: GameData):
-    print("Game data received:", data)
-    return {"message": "Data saved"}
+def receive_game_data(data: GameLevelData):
+    print("Level received:", data)
+    return {"message": "Level saved"}
