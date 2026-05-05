@@ -164,3 +164,7 @@ def get_latest_assessment(
         "followup_complete": result.followup_answers is not None,
         "created_at": result.created_at,
     }
+
+@router.get("/test123")
+def test123():
+    return {"msg": "it works"}
