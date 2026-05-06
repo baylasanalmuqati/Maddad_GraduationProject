@@ -1,32 +1,7 @@
 /*
 ===========================================
-  MADDAD PROJECT — script.js
+  MADDAD PROJECT — script.js (Final Version)
   كل منطق التطبيق في ملف واحد
-===========================================
-
-  أقسام هذا الملف (ابحث عن التعليقات):
-  
-  1. [INDEX PAGE]         ← دوال صفحة البداية
-  2. [PARENT PAGE]        ← تسجيل الدخول وإنشاء الحساب
-  3. [HOME NEW PAGE]      ← الصفحة الرئيسية (بعد التسجيل أول مرة)
-  4. [HOME LOGIN PAGE]    ← الصفحة الرئيسية (بعد الدخول)
-  5. [QUESTIONNAIRE]      ← منطق الاستبيان العشرة أسئلة
-  6. [RESULT PAGE]        ← عرض النتيجة + رسالة التذكير للمتوسط
-  7. [FOLLOWUP PAGE]      ← أسئلة المتابعة (للخطر العالي فقط)
-  8. [GROWTH DATA]        ← بيانات مساحة النمو (ألعاب + نصائح)
-  9. [GAMES PAGE]         ← صفحة مساحة النمو
-  10. [GROWTH DETAIL]     ← تفاصيل اللعبة أو النصيحة
-  11. [CHILD PAGES]       ← صفحات الطفل
-
-  منطق التصنيف:
-  - منخفض  → لا أسئلة متابعة، يرجع للرئيسية
-  - متوسط  → لا أسئلة متابعة، يروح للألعاب مباشرة + تذكير بعد شهر
-  - عالي   → أسئلة متابعة إلزامية
-
-  ألوان التطبيق:
-  - الكحلي الأساسي: #3c5274
-  - الكحلي الفاتح:  #7a93b5  (زر السابق)
-  - الكحلي الناعم:  #c8d8ea  (خلفيات)
 ===========================================
 */
 
@@ -37,10 +12,9 @@ function goParent() {
   window.location.href = "pages/parent.html";
 }
 
-function goChild(){
-  window.location.href="pages/child-login.html";
+function goChild() {
+  window.location.href = "pages/child-login.html";
 }
-
 
 /* =========================
    PARENT PAGE
@@ -57,50 +31,26 @@ function showLogin() {
 
 function selectOption(button, inputId, value, errorId) {
   const group = button.parentElement;
-  const buttons = group.querySelectorAll(".selection-btn");
-
-  buttons.forEach(btn => btn.classList.remove("selected"));
+  group.querySelectorAll(".selection-btn").forEach(btn => btn.classList.remove("selected"));
   button.classList.add("selected");
-
   document.getElementById(inputId).value = value;
-
-  if (errorId) {
-    document.getElementById(errorId).textContent = "";
-  }
+  if (errorId) document.getElementById(errorId).textContent = "";
 }
 
 function validateEmail(input, errorId) {
   const error = document.getElementById(errorId);
   const pattern = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
   const value = input.value.trim();
-
-  if (!value) {
-    error.textContent = "البريد الإلكتروني مطلوب";
-  } else if (!pattern.test(value)) {
-    error.textContent = "صيغة البريد الإلكتروني غير صحيحة";
-  } else {
-    error.textContent = "";
-  }
+  if (!value) error.textContent = "البريد الإلكتروني مطلوب";
+  else if (!pattern.test(value)) error.textContent = "صيغة البريد الإلكتروني غير صحيحة";
+  else error.textContent = "";
 }
 
-// mode: isSignup=true shows format rules | isSignup=false (login) just checks not empty
 function validatePassword(input, errorId, isSignup = true) {
   const error = document.getElementById(errorId);
   const value = input.value;
-
-  if (!value) {
-    error.textContent = "كلمة المرور مطلوبة";
-    input.dataset.valid = "false";
-    return;
-  }
-
-  // For login: server validates — skip format rules
-  if (!isSignup) {
-    error.textContent = "";
-    input.dataset.valid = "true";
-    return;
-  }
-
+  if (!value) { error.textContent = "كلمة المرور مطلوبة"; input.dataset.valid = "false"; return; }
+  if (!isSignup) { error.textContent = ""; input.dataset.valid = "true"; return; }
   const rules = [
     { test: value.length >= 8, label: "8 أحرف على الأقل" },
     { test: /[A-Z]/.test(value), label: "حرف كبير (A-Z)" },
@@ -108,48 +58,29 @@ function validatePassword(input, errorId, isSignup = true) {
     { test: /[0-9]/.test(value), label: "رقم واحد على الأقل" },
     { test: /[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?]/.test(value), label: "رمز خاص (!@#$%...)" }
   ];
-
-  const allPassed = rules.every(rule => rule.test);
+  const allPassed = rules.every(r => r.test);
   input.dataset.valid = allPassed ? "true" : "false";
-
-  const listItems = rules.map(rule =>
-    `<li style="color:${rule.test ? 'green' : 'red'};">
-      ${rule.test ? '✅' : '❌'} ${rule.label}
-    </li>`
-  ).join("");
-
-  error.innerHTML = `<ul>${listItems}</ul>`;
+  error.innerHTML = `<ul>${rules.map(r => `<li style="color:${r.test?'green':'red'}">${r.test?'✅':'❌'} ${r.label}</li>`).join("")}</ul>`;
 }
 
 function validateName(input, errorId) {
   const error = document.getElementById(errorId);
   const pattern = /^[\u0600-\u06FFa-zA-Z\s]+$/;
   const value = input.value.trim();
-
-  if (!value) {
-    error.textContent = "اسم الطفل مطلوب";
-  } else if (value.length < 2) {
-    error.textContent = "الاسم يجب أن يكون حرفين على الأقل";
-  } else if (!pattern.test(value)) {
-    error.textContent = "الاسم يجب أن يحتوي على حروف فقط";
-  } else {
-    error.textContent = "";
-  }
+  if (!value) error.textContent = "اسم الطفل مطلوب";
+  else if (value.length < 2) error.textContent = "الاسم يجب أن يكون حرفين على الأقل";
+  else if (!pattern.test(value)) error.textContent = "الاسم يجب أن يحتوي على حروف فقط";
+  else error.textContent = "";
 }
 
 function submitLogin() {
   const emailInput = document.getElementById("parentLoginEmail");
   const passwordInput = document.getElementById("parentLoginPassword");
-
   validateEmail(emailInput, "loginEmailError");
   validatePassword(passwordInput, "loginPasswordError", false);
-
   const emailValid = !document.getElementById("loginEmailError").textContent;
   const passwordValid = passwordInput.dataset.valid === "true";
-
-  if (emailValid && passwordValid) {
-    parentLogin();
-  }
+  if (emailValid && passwordValid) parentLogin();
 }
 
 function submitSignup() {
@@ -158,32 +89,19 @@ function submitSignup() {
   const genderInput = document.getElementById("signupChildGender");
   const emailInput = document.getElementById("signupEmail");
   const passwordInput = document.getElementById("signupPassword");
-
   validateName(nameInput, "signupNameError");
   validateEmail(emailInput, "signupEmailError");
   validatePassword(passwordInput, "signupPasswordError");
-
-  if (!ageInput.value) {
-    document.getElementById("signupAgeError").textContent = "يرجى اختيار عمر الطفل";
-  } else {
-    document.getElementById("signupAgeError").textContent = "";
-  }
-
-  if (!genderInput.value) {
-    document.getElementById("signupGenderError").textContent = "يرجى اختيار جنس الطفل";
-  } else {
-    document.getElementById("signupGenderError").textContent = "";
-  }
-
+  if (!ageInput.value) document.getElementById("signupAgeError").textContent = "يرجى اختيار عمر الطفل";
+  else document.getElementById("signupAgeError").textContent = "";
+  if (!genderInput.value) document.getElementById("signupGenderError").textContent = "يرجى اختيار جنس الطفل";
+  else document.getElementById("signupGenderError").textContent = "";
   const nameValid = !document.getElementById("signupNameError").textContent;
   const ageValid = !!ageInput.value;
   const genderValid = !!genderInput.value;
   const emailValid = !document.getElementById("signupEmailError").textContent;
   const passwordValid = passwordInput.dataset.valid === "true";
-
-  if (nameValid && ageValid && genderValid && emailValid && passwordValid) {
-    parentSignup();
-  }
+  if (nameValid && ageValid && genderValid && emailValid && passwordValid) parentSignup();
 }
 
 async function parentSignup() {
@@ -195,86 +113,82 @@ async function parentSignup() {
   const password = document.getElementById("signupPassword").value.trim();
 
   if (!childName || !childAge || !childGender || !email || !password) {
-    alert("فضلاً عبئي جميع الحقول");
-    return;
+    alert("فضلاً عبئي جميع الحقول"); return;
   }
 
-  // Always save locally first so data is available even without backend
-  const account = {
-    childName,
-    childAge,
-    childGender,
-    parentRole,
-    email,
-    createdAt: new Date().toLocaleDateString("ar-SA"),
-  };
-  localStorage.setItem("maddadAccount", JSON.stringify(account));
-  localStorage.setItem("maddadLoggedIn", "true");
-
-  // Try the backend API
   try {
-    const result = await apiRegister({
-      email,
-      password,
-      child_name: childName,
-      child_age: childAge,
-      child_gender: childGender,
-    });
-    // Update with API response if available
-    if (result && result.child_name) {
-      account.childName = result.child_name;
-      account.childAge = result.child_age;
-      account.childGender = result.child_gender;
-      localStorage.setItem("maddadAccount", JSON.stringify(account));
-    }
+    const result = await apiRegister({ email, password, child_name: childName, child_age: childAge, child_gender: childGender });
+    // Save account locally with parentRole
+    const account = {
+      childName: result.child_name || childName,
+      childAge: result.child_age || childAge,
+      childGender: result.child_gender || childGender,
+      parentRole,
+      email: result.email || email,
+      createdAt: new Date().toLocaleDateString("ar-SA"),
+    };
+    localStorage.setItem("maddadAccount", JSON.stringify(account));
+    localStorage.setItem("maddadLoggedIn", "true");
+    alert("تم إنشاء الحساب بنجاح! تحقق من بريدك الإلكتروني لتفعيل الحساب.");
+    window.location.href = "parent.html";
   } catch (err) {
-    if (err.status === 409) {
-      alert("البريد الإلكتروني مستخدم بالفعل");
-      localStorage.removeItem("maddadAccount");
-      localStorage.removeItem("maddadLoggedIn");
-      return;
-    }
-    // Backend unavailable — local data already saved above, continue
+    if (err.status === 409) { alert("البريد الإلكتروني مستخدم بالفعل"); return; }
+    // Fallback to localStorage if backend unavailable
+    const account = { childName, childAge, childGender, parentRole, email, createdAt: new Date().toLocaleDateString("ar-SA") };
+    localStorage.setItem("maddadAccount", JSON.stringify(account));
+    localStorage.setItem("maddadLoggedIn", "true");
+    localStorage.removeItem("maddadAssessment");
+    localStorage.removeItem("maddadAssessmentEmail");
+    window.location.href = "home-new.html";
   }
-
-  window.location.href = "home-new.html";
 }
 
 async function parentLogin() {
   const email = document.getElementById("parentLoginEmail").value.trim();
   const password = document.getElementById("parentLoginPassword").value.trim();
+  if (!email || !password) { alert("فضلاً أدخلي البريد الإلكتروني وكلمة المرور"); return; }
 
-  if (!email || !password) {
-    alert("فضلاً أدخلي البريد الإلكتروني وكلمة المرور");
-    return;
-  }
-
-  // Try the backend API first
   try {
     const result = await apiLogin(email, password);
-    // Ensure account info is stored from API response
     if (result && result.child_name) {
+      const savedAccount = JSON.parse(localStorage.getItem("maddadAccount") || "{}");
       const account = {
         childName: result.child_name,
         childAge: result.child_age,
         childGender: result.child_gender,
         email: result.email || email,
+        parentRole: savedAccount.parentRole || "",
         createdAt: new Date().toLocaleDateString("ar-SA"),
       };
       localStorage.setItem("maddadAccount", JSON.stringify(account));
       localStorage.setItem("maddadLoggedIn", "true");
     }
-    window.location.href = "home-login.html";
+    // Check if assessment belongs to this account
+    const assessment = JSON.parse(localStorage.getItem("maddadAssessment") || "null");
+    const assessmentEmail = localStorage.getItem("maddadAssessmentEmail");
+    const currentEmail = JSON.parse(localStorage.getItem("maddadAccount") || "{}").email || email;
+    if (assessment && assessmentEmail === currentEmail) {
+      window.location.href = "home-login.html";
+    } else {
+      localStorage.removeItem("maddadAssessment");
+      localStorage.removeItem("maddadAssessmentEmail");
+      localStorage.removeItem("maddadHistory");
+      localStorage.removeItem("maddadQuestionnaireProgress");
+      window.location.href = "home-new.html";
+    }
     return;
   } catch (err) {
     if (err.status === 401 || err.status === 403) {
-      alert("البريد الإلكتروني أو كلمة المرور غير صحيحة");
-      return;
+      const msg = err.status === 403
+        ? "الحساب غير مفعّل. تحقق من بريدك الإلكتروني لتفعيل الحساب."
+        : "البريد الإلكتروني أو كلمة المرور غير صحيحة";
+      alert(msg); return;
     }
-    // Backend unavailable – check whether a cached session exists for this email
     const savedAccount = JSON.parse(localStorage.getItem("maddadAccount"));
     if (savedAccount && email === savedAccount.email && localStorage.getItem("maddadLoggedIn") === "true") {
-      window.location.href = "home-login.html";
+      const assessment = JSON.parse(localStorage.getItem("maddadAssessment") || "null");
+      const assessmentEmail = localStorage.getItem("maddadAssessmentEmail");
+      window.location.href = (assessment && assessmentEmail === email) ? "home-login.html" : "home-new.html";
     } else {
       alert("تعذّر الوصول إلى الخادم. يرجى التحقق من الاتصال بالإنترنت والمحاولة مرة أخرى.");
     }
@@ -284,39 +198,49 @@ async function parentLogin() {
 /* =========================
    HOME NEW PAGE
 ========================= */
-
 async function logout() {
   await apiLogout();
+  localStorage.removeItem("maddadLoggedIn");
   window.location.href = "../index.html";
 }
 
-function startQuestionnaire() {
-  window.location.href = "questionnaire.html";
+function checkHomeNewAccess() {
+  const loggedIn = localStorage.getItem("maddadLoggedIn");
+  if (loggedIn !== "true") { window.location.href = "parent.html"; return; }
+  const account = JSON.parse(localStorage.getItem("maddadAccount") || "{}");
+  const assessment = getAssessment();
+  const assessmentEmail = localStorage.getItem("maddadAssessmentEmail");
+  if (assessment && assessmentEmail === account.email) {
+    window.location.href = "home-login.html";
+  }
 }
 
+function startQuestionnaire() {
+  localStorage.removeItem("maddadQuestionnaireProgress");
+  localStorage.removeItem("maddadAssessment");
+  localStorage.removeItem("maddadAssessmentEmail");
+  window.location.href = "questionnaire.html";
+}
 
 /* =========================
    HOME LOGIN PAGE
 ========================= */
+function goGames() { window.location.href = "games.html"; }
+function goSettings() { window.location.href = "settings.html"; }
 
-function goGames() {
-  window.location.href = "games.html";
-}
-
-function goSettings() {
-  window.location.href = "settings.html";
+function goBackHome() {
+  const loggedIn = localStorage.getItem("maddadLoggedIn");
+  const assessment = getAssessment();
+  if (loggedIn === "true" && assessment) window.location.href = "home-login.html";
+  else if (loggedIn === "true") window.location.href = "home-new.html";
+  else window.location.href = "parent.html";
 }
 
 async function loadLoginHomePage() {
   const loggedIn = localStorage.getItem("maddadLoggedIn");
   const savedAccount = JSON.parse(localStorage.getItem("maddadAccount"));
+  if (loggedIn !== "true" || !savedAccount) { window.location.href = "parent.html"; return; }
 
-  if (loggedIn !== "true" || !savedAccount) {
-    window.location.href = "parent.html";
-    return;
-  }
-
-  // Refresh profile from the API (silently falls back to cache on error)
   let account = savedAccount;
   try {
     const profile = await apiGetProfile();
@@ -325,62 +249,38 @@ async function loadLoginHomePage() {
       childAge: profile.child_age,
       childGender: profile.child_gender,
       email: profile.email,
+      parentRole: savedAccount.parentRole || "",
     };
+    localStorage.setItem("maddadAccount", JSON.stringify({ ...account, createdAt: savedAccount.createdAt }));
   } catch (_) {}
 
   const welcomeTitle = document.getElementById("welcomeTitle");
-  const childNameText = document.getElementById("childNameText");
-  const childAgeText = document.getElementById("childAgeText");
-  const childGenderText = document.getElementById("childGenderText");
-  const emailText = document.getElementById("emailText");
-
   if (welcomeTitle) {
     const role = account.parentRole || "";
     const name = account.childName || "";
     let greeting = "أهلاً ولي الأمر";
-    if (role === "أب" && name) greeting = `أهلاً بأبو ${name}`;
-    else if (role === "أم" && name) greeting = `أهلاً بأم ${name}`;
+    if (role === "أب" && name) greeting = `أهلاً بك، أبو ${name}`;
+    else if (role === "أم" && name) greeting = `أهلاً بك، أم ${name}`;
     else if (name) greeting = `أهلاً بك، ولي أمر ${name}`;
     welcomeTitle.textContent = greeting;
   }
-
-  if (childNameText) {
-    childNameText.textContent = account.childName || "-";
-  }
-
-  if (childAgeText) {
-    childAgeText.textContent = account.childAge || "-";
-  }
-
-  if (childGenderText) {
-    childGenderText.textContent = account.childGender || "-";
-  }
-
-  if (emailText) {
-    emailText.textContent = account.email || "-";
-  }
+  const el = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val || "-"; };
+  el("childNameText", account.childName);
+  el("childAgeText", account.childAge);
+  el("childGenderText", account.childGender);
+  el("emailText", account.email);
 }
 
 /* =========================
    QUESTIONNAIRE HELPERS
 ========================= */
-
-function getSavedAccount() {
-  return JSON.parse(localStorage.getItem("maddadAccount"));
-}
-
-function getAssessment() {
-  return JSON.parse(localStorage.getItem("maddadAssessment")) || null;
-}
+function getSavedAccount() { return JSON.parse(localStorage.getItem("maddadAccount")); }
+function getAssessment() { return JSON.parse(localStorage.getItem("maddadAssessment")) || null; }
 
 function saveAssessment(data) {
   localStorage.setItem("maddadAssessment", JSON.stringify(data));
-}
-
-function startQuestionnaire() {
-  localStorage.removeItem("maddadQuestionnaireProgress");
-  localStorage.removeItem("maddadAssessment");
-  window.location.href = "questionnaire.html";
+  const account = JSON.parse(localStorage.getItem("maddadAccount") || "{}");
+  if (account.email) localStorage.setItem("maddadAssessmentEmail", account.email);
 }
 
 function resetQuestionnaireAndGoHome() {
@@ -390,71 +290,32 @@ function resetQuestionnaireAndGoHome() {
   window.location.href = "home-login.html";
 }
 
-const skillKeys = [
-  "response_to_name",
-  "eye_contact",
-  "social_smile",
-  "imitation",
-  "discrimination",
-  "pointing_with_finger",
-  "facial_expressions",
-  "joint_attention",
-  "play_skills",
-  "response_to_commands"
-];
+const skillKeys = ["response_to_name","eye_contact","social_smile","imitation","discrimination","pointing_with_finger","facial_expressions","joint_attention","play_skills","response_to_commands"];
 
 const skillLabelsArabic = {
-  response_to_name: "الاستجابة للاسم",
-  eye_contact: "التواصل البصري",
-  social_smile: "الابتسامة الاجتماعية",
-  imitation: "التقليد",
-  discrimination: "التمييز",
-  pointing_with_finger: "الإشارة بالإصبع",
-  facial_expressions: "تعابير الوجه",
-  joint_attention: "الانتباه المشترك",
-  play_skills: "مهارات اللعب",
-  response_to_commands: "تنفيذ الأوامر"
+  response_to_name:"الاستجابة للاسم", eye_contact:"التواصل البصري", social_smile:"الابتسامة الاجتماعية",
+  imitation:"التقليد", discrimination:"التمييز", pointing_with_finger:"الإشارة بالإصبع",
+  facial_expressions:"تعابير الوجه", joint_attention:"الانتباه المشترك", play_skills:"مهارات اللعب",
+  response_to_commands:"تنفيذ الأوامر"
 };
 
 function calculateScore(answersObj) {
   let score = 0;
-  skillKeys.forEach(key => {
-    score += Number(answersObj[key] || 0);
-  });
+  skillKeys.forEach(key => { score += Number(answersObj[key] || 0); });
   return score;
 }
 
 function classifyRisk(ageGroup, score) {
-  if (ageGroup === "12-18") {
-    if (score <= 2) return "low";
-    if (score >= 3 && score <= 5) return "medium";
-    return "high";
-  }
-
-  if (ageGroup === "19-24") {
-    if (score <= 2) return "low";
-    if (score >= 3 && score <= 4) return "medium";
-    return "high";
-  }
-
-  if (ageGroup === "25-30") {
-    if (score <= 1) return "low";
-    if (score >= 2 && score <= 4) return "medium";
-    return "high";
-  }
-
-  if (ageGroup === "31-36") {
-    if (score <= 1) return "low";
-    if (score >= 2 && score <= 3) return "medium";
-    return "high";
-  }
-
+  if (ageGroup === "12-18") { if (score <= 2) return "low"; if (score <= 5) return "medium"; return "high"; }
+  if (ageGroup === "19-24") { if (score <= 2) return "low"; if (score <= 4) return "medium"; return "high"; }
+  if (ageGroup === "25-30") { if (score <= 1) return "low"; if (score <= 4) return "medium"; return "high"; }
+  if (ageGroup === "31-36") { if (score <= 1) return "low"; if (score <= 3) return "medium"; return "high"; }
   return "low";
 }
 
 function riskTextArabic(risk) {
-  if (risk === "low") return "منخفضة";
-  if (risk === "medium") return "متوسطة";
+  if (risk === "low" || risk === "Low") return "منخفضة";
+  if (risk === "medium" || risk === "Medium") return "متوسطة";
   return "مرتفعة";
 }
 
@@ -462,101 +323,21 @@ function getFailedSkills(answersObj) {
   return skillKeys.filter(key => Number(answersObj[key]) === 1);
 }
 
+
 /* =========================
    QUESTIONNAIRE PAGE
 ========================= */
-
 const questionnaireSteps = [
-  {
-    key: "response_to_name",
-    title: "الاستجابة للاسم",
-    description: "يستجيب طفلك عند مناداته باسمه، يلتفت أو ينظر إليك.",
-    options: [
-      { label: "نعم", value: "0" },
-      { label: "لا", value: "1" }
-    ]
-  },
-  {
-    key: "eye_contact",
-    title: "التواصل البصري",
-    description: "يتواصل طفلك معك بصريًا / ينظر إليك لمدة 3 - 5 ثوانٍ أثناء لعبك، غنائك، أو تحدثك معه.",
-    options: [
-      { label: "نعم", value: "0" },
-      { label: "لا", value: "1" }
-    ]
-  },
-  {
-    key: "social_smile",
-    title: "الابتسامة الاجتماعية",
-    description: "عندما يستيقظ طفلك صباحًا، أو عند مقابلة أحد الوالدين أو الأشخاص المألوفين؛ فإنه يبتسم لك / لهم.",
-    options: [
-      { label: "نعم", value: "0" },
-      { label: "لا", value: "1" }
-    ]
-  },
-  {
-    key: "imitation",
-    title: "التقليد",
-    description: "يحاول طفلك تقليد أفعالك أو أفعال الأشخاص من حوله.",
-    options: [
-      { label: "نعم", value: "0" },
-      { label: "لا", value: "1" }
-    ]
-  },
-  {
-    key: "discrimination",
-    title: "التمييز",
-    description: "يشير طفلك إلى أعضاء جسمه عند سؤاله ويميز الأدوات اليومية والأشخاص.",
-    options: [
-      { label: "نعم", value: "0" },
-      { label: "لا", value: "1" }
-    ]
-  },
-  {
-    key: "pointing_with_finger",
-    title: "الإشارة بالإصبع",
-    description: "عند رغبة طفلك بالحصول على شيء أو لفت الانتباه؛ فإنه يشير إليه بإصبعه.",
-    options: [
-      { label: "نعم", value: "0" },
-      { label: "لا", value: "1" }
-    ]
-  },
-  {
-    key: "facial_expressions",
-    title: "تعابير الوجه",
-    description: "يميز طفلك مشاعر الآخرين ويعطي ردة فعل مناسبة حسب الموقف.",
-    options: [
-      { label: "نعم", value: "0" },
-      { label: "لا", value: "1" }
-    ]
-  },
-  {
-    key: "joint_attention",
-    title: "الانتباه المشترك",
-    description: "يحضر طفلك لعبة مهتمًا بها ويُريها للآخرين وينتظر تفاعلهم.",
-    options: [
-      { label: "نعم", value: "0" },
-      { label: "لا", value: "1" }
-    ]
-  },
-  {
-    key: "play_skills",
-    title: "مهارات اللعب",
-    description: "يندمج طفلك في اللعب الوظيفي أو التخيلي.",
-    options: [
-      { label: "نعم", value: "0" },
-      { label: "لا", value: "1" }
-    ]
-  },
-  {
-    key: "response_to_commands",
-    title: "تنفيذ الأوامر",
-    description: "يتبع طفلك الأوامر اليومية البسيطة.",
-    options: [
-      { label: "نعم", value: "0" },
-      { label: "لا", value: "1" }
-    ]
-  }
+  { key:"response_to_name", title:"الاستجابة للاسم", description:"يستجيب طفلك عند مناداته باسمه، يلتفت أو ينظر إليك.", options:[{label:"نعم",value:"0"},{label:"لا",value:"1"}] },
+  { key:"eye_contact", title:"التواصل البصري", description:"يتواصل طفلك معك بصريًا / ينظر إليك لمدة 3 - 5 ثوانٍ أثناء لعبك، غنائك، أو تحدثك معه.", options:[{label:"نعم",value:"0"},{label:"لا",value:"1"}] },
+  { key:"social_smile", title:"الابتسامة الاجتماعية", description:"عندما يستيقظ طفلك صباحًا، أو عند مقابلة أحد الوالدين أو الأشخاص المألوفين؛ فإنه يبتسم لك / لهم.", options:[{label:"نعم",value:"0"},{label:"لا",value:"1"}] },
+  { key:"imitation", title:"التقليد", description:"يحاول طفلك تقليد أفعالك أو أفعال الأشخاص من حوله.", options:[{label:"نعم",value:"0"},{label:"لا",value:"1"}] },
+  { key:"discrimination", title:"التمييز", description:"يشير طفلك إلى أعضاء جسمه عند سؤاله ويميز الأدوات اليومية والأشخاص.", options:[{label:"نعم",value:"0"},{label:"لا",value:"1"}] },
+  { key:"pointing_with_finger", title:"الإشارة بالإصبع", description:"عند رغبة طفلك بالحصول على شيء أو لفت الانتباه؛ فإنه يشير إليه بإصبعه.", options:[{label:"نعم",value:"0"},{label:"لا",value:"1"}] },
+  { key:"facial_expressions", title:"تعابير الوجه", description:"يميز طفلك مشاعر الآخرين ويعطي ردة فعل مناسبة حسب الموقف.", options:[{label:"نعم",value:"0"},{label:"لا",value:"1"}] },
+  { key:"joint_attention", title:"الانتباه المشترك", description:"يحضر طفلك لعبة مهتمًا بها ويُريها للآخرين وينتظر تفاعلهم.", options:[{label:"نعم",value:"0"},{label:"لا",value:"1"}] },
+  { key:"play_skills", title:"مهارات اللعب", description:"يندمج طفلك في اللعب الوظيفي أو التخيلي.", options:[{label:"نعم",value:"0"},{label:"لا",value:"1"}] },
+  { key:"response_to_commands", title:"تنفيذ الأوامر", description:"يتبع طفلك الأوامر اليومية البسيطة.", options:[{label:"نعم",value:"0"},{label:"لا",value:"1"}] }
 ];
 
 let currentQuestionIndex = 0;
@@ -564,30 +345,16 @@ let questionnaireAnswers = {};
 
 function loadQuestionnairePage() {
   const loggedIn = localStorage.getItem("maddadLoggedIn");
-  const savedAccount = getSavedAccount();
-
-  if (loggedIn !== "true" || !savedAccount) {
-    window.location.href = "parent.html";
-    return;
-  }
-
+  if (loggedIn !== "true" || !getSavedAccount()) { window.location.href = "parent.html"; return; }
   const savedProgress = JSON.parse(localStorage.getItem("maddadQuestionnaireProgress"));
-
-  if (savedProgress) {
-    currentQuestionIndex = savedProgress.currentQuestionIndex || 0;
-    questionnaireAnswers = savedProgress.answers || {};
-  } else {
-    currentQuestionIndex = 0;
-    questionnaireAnswers = {};
-  }
-
+  if (savedProgress) { currentQuestionIndex = savedProgress.currentQuestionIndex || 0; questionnaireAnswers = savedProgress.answers || {}; }
+  else { currentQuestionIndex = 0; questionnaireAnswers = {}; }
   renderQuestionStep();
 }
 
 function renderQuestionStep() {
   const step = questionnaireSteps[currentQuestionIndex];
   if (!step) return;
-
   const progress = document.getElementById("questionProgress");
   const title = document.getElementById("questionTitle");
   const description = document.getElementById("questionDescription");
@@ -595,89 +362,40 @@ function renderQuestionStep() {
   const error = document.getElementById("questionnaireError");
   const prevBtn = document.getElementById("prevQuestionBtn");
   const nextBtn = document.getElementById("nextQuestionBtn");
-
   if (error) error.textContent = "";
-
   progress.textContent = `السؤال: ${currentQuestionIndex + 1}/${questionnaireSteps.length}`;
   title.textContent = step.title;
   description.textContent = step.description || "";
-
   optionsBox.innerHTML = "";
-
   step.options.forEach(option => {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "questionnaire-option";
-
-    if (questionnaireAnswers[step.key] === option.value) {
-      btn.classList.add("selected");
-    }
-
+    if (questionnaireAnswers[step.key] === option.value) btn.classList.add("selected");
     btn.textContent = option.label;
     btn.onclick = () => selectQuestionOption(step.key, option.value);
-
     optionsBox.appendChild(btn);
   });
-
-  if (prevBtn) {
-    prevBtn.style.visibility = currentQuestionIndex === 0 ? "hidden" : "visible";
-  }
-
-  if (nextBtn) {
-    nextBtn.textContent = currentQuestionIndex === questionnaireSteps.length - 1 ? "إنهاء" : "التالي";
-  }
-
-  localStorage.setItem("maddadQuestionnaireProgress", JSON.stringify({
-    currentQuestionIndex,
-    answers: questionnaireAnswers
-  }));
+  if (prevBtn) prevBtn.style.visibility = currentQuestionIndex === 0 ? "hidden" : "visible";
+  if (nextBtn) nextBtn.textContent = currentQuestionIndex === questionnaireSteps.length - 1 ? "إنهاء" : "التالي";
+  localStorage.setItem("maddadQuestionnaireProgress", JSON.stringify({ currentQuestionIndex, answers: questionnaireAnswers }));
 }
 
-function selectQuestionOption(key, value) {
-  questionnaireAnswers[key] = value;
-  renderQuestionStep();
-}
-
-function goPrevQuestion() {
-  if (currentQuestionIndex > 0) {
-    currentQuestionIndex--;
-    renderQuestionStep();
-  }
-}
+function selectQuestionOption(key, value) { questionnaireAnswers[key] = value; renderQuestionStep(); }
+function goPrevQuestion() { if (currentQuestionIndex > 0) { currentQuestionIndex--; renderQuestionStep(); } }
 
 function goNextQuestion() {
   const step = questionnaireSteps[currentQuestionIndex];
   const error = document.getElementById("questionnaireError");
-
-  if (!questionnaireAnswers[step.key]) {
-    if (error) error.textContent = "يرجى اختيار إجابة قبل المتابعة.";
-    return;
-  }
-
-  if (currentQuestionIndex < questionnaireSteps.length - 1) {
-    currentQuestionIndex++;
-    renderQuestionStep();
-  } else {
-    finishQuestionnaire();
-  }
+  if (!questionnaireAnswers[step.key]) { if (error) error.textContent = "يرجى اختيار إجابة قبل المتابعة."; return; }
+  if (currentQuestionIndex < questionnaireSteps.length - 1) { currentQuestionIndex++; renderQuestionStep(); }
+  else finishQuestionnaire();
 }
 
 async function finishQuestionnaire() {
   const account = getSavedAccount();
-
-  const answers = {
-    response_to_name: Number(questionnaireAnswers.response_to_name),
-    eye_contact: Number(questionnaireAnswers.eye_contact),
-    social_smile: Number(questionnaireAnswers.social_smile),
-    imitation: Number(questionnaireAnswers.imitation),
-    discrimination: Number(questionnaireAnswers.discrimination),
-    pointing_with_finger: Number(questionnaireAnswers.pointing_with_finger),
-    facial_expressions: Number(questionnaireAnswers.facial_expressions),
-    joint_attention: Number(questionnaireAnswers.joint_attention),
-    play_skills: Number(questionnaireAnswers.play_skills),
-    response_to_commands: Number(questionnaireAnswers.response_to_commands)
-  };
-
+  const answers = {};
+  skillKeys.forEach(key => { answers[key] = Number(questionnaireAnswers[key] || 0); });
   const score = calculateScore(answers);
   const initialRisk = classifyRisk(account.childAge, score);
   const failedSkills = getFailedSkills(answers);
@@ -686,42 +404,25 @@ async function finishQuestionnaire() {
   let mlConfidence = null;
   let resultId = null;
 
-  // Request ML prediction from the backend
   try {
-    const apiResult = await apiSubmitQuestionnaire(
-      account.childAge,
-      account.childGender,
-      answers
-    );
+    const apiResult = await apiSubmitQuestionnaire(account.childAge, account.childGender, answers);
     mlRisk = apiResult.prediction.risk;
     mlConfidence = apiResult.prediction.confidence;
     resultId = apiResult.result_id;
-  } catch (_) {
-    // Backend unavailable – use rule-based result only
-  }
+  } catch (_) {}
 
   const assessment = {
-    ageGroup: account.childAge,
-    gender: account.childGender,
-    initialAnswers: answers,
-    currentAnswers: { ...answers },
-    initialScore: score,
-    initialRisk: initialRisk,
-    mlRisk: mlRisk,
-    mlConfidence: mlConfidence,
-    resultId: resultId,
-    failedSkills: failedSkills,
-    followupNeeded: (initialRisk === "high"),
-    followupComplete: false,
-    finalScore: score,
-    finalRisk: initialRisk
+    ageGroup: account.childAge, gender: account.childGender,
+    initialAnswers: answers, currentAnswers: { ...answers },
+    initialScore: score, initialRisk, mlRisk, mlConfidence, resultId,
+    failedSkills, followupNeeded: (initialRisk === "high"),
+    followupComplete: false, finalScore: score, finalRisk: initialRisk
   };
 
   saveAssessment(assessment);
   localStorage.removeItem("maddadQuestionnaireProgress");
   window.location.href = "result.html";
 }
-
 
 /* =========================
    RESULT PAGE
@@ -2040,153 +1741,241 @@ async function childLogin() {
   }
 }
 
+
 /* =========================
-   CHILD GAMES PAGE
+   CHILD GAMES PAGE — with Permission System
 ========================= */
 
 let currentChildGamesFilter = "all";
 
-function loadChildGamesPage() {
-  const loggedIn = localStorage.getItem("maddadLoggedIn");
-
-  if (loggedIn !== "true") {
-    window.location.href = "child-login.html";
-    return;
-  }
-
-  renderChildGames("all");
+function getPermissionsKey() {
+  const account = JSON.parse(localStorage.getItem("maddadAccount") || "{}");
+  return "maddadGamePermissions_" + (account.email || "default");
 }
 
-function setChildGamesFilter(filter, clickedBtn) {
-  currentChildGamesFilter = filter;
+function getRequestsKey() {
+  const account = JSON.parse(localStorage.getItem("maddadAccount") || "{}");
+  return "maddadPermissionRequests_" + (account.email || "default");
+}
 
-  document.querySelectorAll(".child-games-tab").forEach(btn => btn.classList.remove("active"));
-  if (clickedBtn) clickedBtn.classList.add("active");
+async function loadChildGamesPage() {
+  if (localStorage.getItem("maddadLoggedIn") !== "true") {
+    window.location.href = "child-login.html"; return;
+  }
 
-  renderChildGames(filter);
+  // Sync permissions from DB
+  try {
+    const dbPerms = await apiGetPermissions();
+    if (dbPerms && typeof dbPerms === "object") {
+      localStorage.setItem(getPermissionsKey(), JSON.stringify(dbPerms));
+    }
+  } catch (_) {}
+
+  renderChildGames("all");
 }
 
 function renderChildGames(filter) {
   const container = document.getElementById("childGamesGrid");
   if (!container) return;
 
-  const assessment = getAssessment();
-
-  const weakSkills = assessment?.followupComplete
-    ? Object.keys(assessment.currentAnswers || {}).filter(key => Number(assessment.currentAnswers[key]) === 1)
-    : Object.keys(assessment?.initialAnswers || {}).filter(key => Number(assessment.initialAnswers[key]) === 1);
-
-  let items = [];
-
-  if (filter === "all") {
-    items = GAMES_AND_TIPS_DATA.filter(item => item.cardType === "game");
-  } else if (filter === "growth") {
-    items = GAMES_AND_TIPS_DATA.filter(
-      item => item.cardType === "game" && weakSkills.includes(item.skillKey)
-    );
-  }
+  let items = GAMES_AND_TIPS_DATA.filter(item => item.cardType === "game");
 
   if (!items.length) {
-    container.innerHTML = `
-      <div style="grid-column:1/-1; text-align:center; padding:40px 20px; color:#666F82; font-size:18px;">
-        لا توجد ألعاب متاحة حاليًا في هذا القسم.
-      </div>
-    `;
+    container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#666F82;font-size:18px;">لا توجد ألعاب متاحة حاليًا.</div>`;
     return;
   }
 
-  container.innerHTML = items.map(item => `
-    <button class="child-game-card" onclick="openChildGrowthDetail('${item.id}')">
-      <img src="../pictures/skill-game.png" alt="${item.title}" class="child-game-image" />
-      <div class="child-game-title">${item.title}</div>
-    </button>
-  `).join("");
+  const permissions = JSON.parse(localStorage.getItem(getPermissionsKey()) || "{}");
+
+  container.innerHTML = items.map(item => {
+    const isAllowed = permissions[item.id] === true;
+    const icon = (SKILL_ICONS && SKILL_ICONS[item.skillKey]) ? SKILL_ICONS[item.skillKey] : "../pictures/skill-game.png";
+    if (isAllowed) {
+      return `
+        <button class="growth-item-card" onclick="openChildGrowthDetail('${item.id}')">
+          <div class="growth-card-icon-wrap" style="background:#edf1f7;">
+            <img src="${icon}" alt="${item.title}" class="growth-skill-icon" onerror="this.style.display='none'" />
+          </div>
+          <div class="growth-card-badge" style="background:#3c5274;">لعبة</div>
+          <div class="growth-item-title">${item.title}</div>
+        </button>`;
+    } else {
+      return `
+        <div class="growth-item-card child-game-locked" onclick="requestGamePermission('${item.id}', '${item.title}')">
+          <div class="child-game-lock-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="white">
+              <path d="M18 10h-1V7A5 5 0 0 0 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2zm-6 7a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3-7H9V7a3 3 0 0 1 6 0v3z"/>
+            </svg>
+          </div>
+          <div class="growth-card-icon-wrap" style="background:#edf1f7;opacity:0.45;filter:grayscale(0.4);">
+            <img src="${icon}" alt="${item.title}" class="growth-skill-icon" onerror="this.style.display='none'" />
+          </div>
+          <div class="growth-card-badge" style="background:#a0aab8;">لعبة</div>
+          <div class="growth-item-title" style="opacity:0.55;">${item.title}</div>
+          <button class="child-game-request-btn" onclick="event.stopPropagation();requestGamePermission('${item.id}','${item.title}')">اطلب إذن</button>
+        </div>`;
+    }
+  }).join("");
 }
 
 function openChildGrowthDetail(itemId) {
+  const permissions = JSON.parse(localStorage.getItem(getPermissionsKey()) || "{}");
+  if (permissions[itemId] !== true) {
+    const item = GAMES_AND_TIPS_DATA.find(x => x.id === itemId);
+    requestGamePermission(itemId, item ? item.title : "");
+    return;
+  }
+  const item = GAMES_AND_TIPS_DATA.find(x => x.id === itemId && x.cardType === "game");
+  if (item && item.playable && item.targetPage) {
+    window.location.href = item.targetPage;
+    return;
+  }
   localStorage.setItem("maddadSelectedChildGame", itemId);
   window.location.href = "child-growth-detail.html";
+}
+
+function requestGamePermission(itemId, itemTitle) {
+  const modal = document.getElementById("childPermissionModal");
+  if (!modal) return;
+  document.getElementById("childPermissionModalTitle").textContent = (itemTitle || "اللعبة") + " — مقفلة";
+  document.getElementById("childPermissionMsg").style.display = "block";
+  document.getElementById("childPermissionSent").style.display = "none";
+  document.getElementById("childPermissionModalActions").style.display = "flex";
+  document.getElementById("childPermissionCloseBtn").style.display = "none";
+  modal.dataset.gameId = itemId;
+  modal.style.display = "flex";
+}
+
+async function confirmPermissionRequest() {
+  const modal = document.getElementById("childPermissionModal");
+  const gameId = modal ? modal.dataset.gameId : "";
+  const gameTitle = document.getElementById("childPermissionModalTitle")?.textContent.replace(" — مقفلة","") || "";
+
+  // Save to DB via API
+  await apiRequestPermission(gameId, gameTitle);
+
+  // Also save locally as fallback
+  const requests = JSON.parse(localStorage.getItem(getRequestsKey()) || "[]");
+  const exists = requests.find(r => r.gameId === gameId && r.status === "pending");
+  if (!exists && gameId) {
+    requests.push({ gameId, gameTitle, status: "pending", requestedAt: new Date().toISOString() });
+    localStorage.setItem(getRequestsKey(), JSON.stringify(requests));
+  }
+
+  document.getElementById("childPermissionMsg").style.display = "none";
+  document.getElementById("childPermissionSent").style.display = "block";
+  document.getElementById("childPermissionModalActions").style.display = "none";
+  document.getElementById("childPermissionCloseBtn").style.display = "block";
+}
+
+function closePermissionModal() {
+  document.getElementById("childPermissionModal").style.display = "none";
+}
+
+function openParentModeModal() {
+  const modal = document.getElementById("parentModeModal");
+  if (!modal) return;
+  document.getElementById("parentModePassword").value = "";
+  document.getElementById("parentModeError").style.display = "none";
+  document.getElementById("parentModeLoading").style.display = "none";
+  modal.style.display = "flex";
+  setTimeout(() => document.getElementById("parentModePassword").focus(), 100);
+}
+
+function closeParentModeModal() {
+  const modal = document.getElementById("parentModeModal");
+  if (modal) modal.style.display = "none";
+}
+
+async function verifyParentMode() {
+  const input = document.getElementById("parentModePassword");
+  const errorEl = document.getElementById("parentModeError");
+  const loadingEl = document.getElementById("parentModeLoading");
+  const pwd = input ? input.value.trim() : "";
+  if (!pwd) { errorEl.style.display = "block"; errorEl.textContent = "الرجاء إدخال كلمة المرور"; return; }
+  errorEl.style.display = "none";
+  loadingEl.style.display = "block";
+  const account = JSON.parse(localStorage.getItem("maddadAccount") || "{}");
+  try {
+    const result = await apiLogin(account.email || "", pwd);
+    if (result) { loadingEl.style.display = "none"; closeParentModeModal(); window.location.href = "games.html"; return; }
+  } catch (_) {}
+  loadingEl.style.display = "none";
+  errorEl.style.display = "block";
+  errorEl.textContent = "كلمة المرور غير صحيحة";
+  input.value = "";
+  input.focus();
 }
 
 /* =========================
    CHILD GROWTH DETAIL PAGE
 ========================= */
-
 function loadChildGrowthDetailPage() {
   const selectedId = localStorage.getItem("maddadSelectedChildGame");
   const item = GAMES_AND_TIPS_DATA.find(x => x.id === selectedId && x.cardType === "game");
-
-  if (!item) {
-    window.location.href = "child.html";
-    return;
-  }
-
+  if (!item) { window.location.href = "child.html"; return; }
   const image = document.getElementById("childDetailImage");
   const title = document.getElementById("childDetailSkill");
   const text = document.getElementById("childDetailText");
   const actionBtn = document.getElementById("childDetailBtn");
-
   image.src = item.detailIcon;
   image.alt = item.title;
   title.textContent = item.title;
   text.textContent = item.detailText;
-
   if (item.playable) {
     actionBtn.textContent = "ابدأ اللعب الآن";
-    actionBtn.onclick = function () {
-      window.location.href = item.targetPage;
-    };
+    actionBtn.onclick = () => { window.location.href = item.targetPage; };
   } else {
     actionBtn.textContent = "قيد التطوير";
-    actionBtn.onclick = function () {
-      alert("هذه اللعبة قيد التطوير وسيتم العمل عليها مستقبلاً.");
-    };
+    actionBtn.onclick = () => { alert("هذه اللعبة قيد التطوير وسيتم العمل عليها مستقبلاً."); };
   }
+}
+
+/* =========================
+   SETTINGS PAGE
+========================= */
+function goSettings() { window.location.href = "settings.html"; }
+function goBackIndex() { window.location.href = "../index.html"; }
+
+async function loadSettingsPage() {
+  let account;
+  try {
+    const profile = await apiGetProfile();
+    account = {
+      childName: profile.child_name, childAge: profile.child_age,
+      childGender: profile.child_gender, email: profile.email,
+      createdAt: profile.created_at ? new Date(profile.created_at).toLocaleDateString("ar-SA") : (JSON.parse(localStorage.getItem("maddadAccount")) || {}).createdAt || "غير متوفر",
+    };
+  } catch (_) { account = JSON.parse(localStorage.getItem("maddadAccount")) || {}; }
+
+  const el = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val || "غير متوفر"; };
+  el("settingsChildName", account.childName);
+  el("settingsEmail", account.email);
+  el("settingsCreated", account.createdAt);
+  el("settingsChildAge", account.childAge);
+  el("settingsChildGender", account.childGender);
 }
 
 function enableSettingsEdit() {
   const account = JSON.parse(localStorage.getItem("maddadAccount")) || {};
-
   const nameEl = document.getElementById("settingsChildName");
   const emailEl = document.getElementById("settingsEmail");
   const ageEl = document.getElementById("settingsChildAge");
   const genderEl = document.getElementById("settingsChildGender");
-
   const editBtn = document.getElementById("editSettingsBtn");
   const saveBtn = document.getElementById("saveSettingsBtn");
-
-  if (nameEl) {
-    nameEl.innerHTML = `<input type="text" id="editChildName" value="${account.childName || ""}" class="settings-input">`;
-  }
-
-  if (emailEl) {
-    emailEl.innerHTML = `<input type="email" id="editEmail" value="${account.email || ""}" class="settings-input">`;
-  }
-
+  if (nameEl) nameEl.innerHTML = `<input type="text" id="editChildName" value="${account.childName||""}" class="settings-input">`;
+  if (emailEl) emailEl.innerHTML = `<input type="email" id="editEmail" value="${account.email||""}" class="settings-input">`;
   if (ageEl) {
-    ageEl.innerHTML = `
-      <select id="editChildAge" class="settings-input">
-        <option value="12-18">12 - 18 شهر</option>
-        <option value="19-24">19 - 24 شهر</option>
-        <option value="25-30">25 - 30 شهر</option>
-        <option value="31-36">31 - 36 شهر</option>
-      </select>
-    `;
+    ageEl.innerHTML = `<select id="editChildAge" class="settings-input"><option value="12-18">12 - 18 شهر</option><option value="19-24">19 - 24 شهر</option><option value="25-30">25 - 30 شهر</option><option value="31-36">31 - 36 شهر</option></select>`;
     document.getElementById("editChildAge").value = account.childAge || "";
   }
-
   if (genderEl) {
-    genderEl.innerHTML = `
-      <select id="editChildGender" class="settings-input">
-        <option value="ذكر">ذكر</option>
-        <option value="أنثى">أنثى</option>
-      </select>
-    `;
+    genderEl.innerHTML = `<select id="editChildGender" class="settings-input"><option value="ذكر">ذكر</option><option value="أنثى">أنثى</option></select>`;
     document.getElementById("editChildGender").value = account.childGender || "";
   }
-
-  editBtn.style.display = "none";
-  saveBtn.style.display = "inline-block";
+  if (editBtn) editBtn.style.display = "none";
+  if (saveBtn) saveBtn.style.display = "inline-block";
 }
 
 async function saveSettingsData() {
@@ -2194,167 +1983,214 @@ async function saveSettingsData() {
   const newEmail = document.getElementById("editEmail")?.value.trim() || "";
   const newAge = document.getElementById("editChildAge")?.value || "";
   const newGender = document.getElementById("editChildGender")?.value || "";
-
-  // Try to persist via API; fall back to localStorage-only update
   try {
-    await apiUpdateProfile({
-      child_name: newName || undefined,
-      email: newEmail || undefined,
-      child_age: newAge || undefined,
-      child_gender: newGender || undefined,
-    });
+    await apiUpdateProfile({ child_name: newName||undefined, email: newEmail||undefined, child_age: newAge||undefined, child_gender: newGender||undefined });
+    const account = JSON.parse(localStorage.getItem("maddadAccount") || "{}");
+    account.childName = newName; account.email = newEmail; account.childAge = newAge; account.childGender = newGender;
+    localStorage.setItem("maddadAccount", JSON.stringify(account));
   } catch (_) {
-    const account = JSON.parse(localStorage.getItem("maddadAccount")) || {};
-    account.childName = newName;
-    account.email = newEmail;
-    account.childAge = newAge;
-    account.childGender = newGender;
+    const account = JSON.parse(localStorage.getItem("maddadAccount") || "{}");
+    account.childName = newName; account.email = newEmail; account.childAge = newAge; account.childGender = newGender;
     localStorage.setItem("maddadAccount", JSON.stringify(account));
   }
-
   await loadSettingsPage();
-
   const editBtn = document.getElementById("editSettingsBtn");
   const saveBtn = document.getElementById("saveSettingsBtn");
-
   if (editBtn) editBtn.style.display = "inline-block";
   if (saveBtn) saveBtn.style.display = "none";
 }
 
-function goDashboard() {
-  window.location.href = "dashboard.html";
+function openAbout() {
+  alert("مدد هو نظام رقمي يساعد أولياء الأمور على دعم نمو أطفالهم من خلال أدوات تقييم مبكرة وأنشطة تفاعلية تساعد على تطوير المهارات الأساسية بطريقة ممتعة وآمنة.");
 }
+
+/* =========================
+   CHILD LOGIN
+========================= */
+function submitChildLogin() {
+  const emailInput = document.getElementById("childLoginEmail");
+  const passwordInput = document.getElementById("childLoginPassword");
+  validateEmail(emailInput, "childEmailError");
+  const emailValid = !document.getElementById("childEmailError").textContent;
+  if (emailValid && emailInput.value && passwordInput.value) childLogin();
+}
+
+async function childLogin() {
+  const email = document.getElementById("childLoginEmail").value.trim();
+  const password = document.getElementById("childLoginPassword").value.trim();
+  if (!email || !password) { alert("يرجى إدخال البريد الإلكتروني وكلمة المرور"); return; }
+  try {
+    await apiLogin(email, password);
+    window.location.href = "child.html";
+  } catch (err) {
+    if (err.status === 401 || err.status === 403) { alert("البريد الإلكتروني أو كلمة المرور غير صحيحة"); return; }
+    const savedAccount = JSON.parse(localStorage.getItem("maddadAccount"));
+    if (savedAccount && email === savedAccount.email && localStorage.getItem("maddadLoggedIn") === "true") {
+      window.location.href = "child.html";
+    } else {
+      alert("تعذّر الوصول إلى الخادم.");
+    }
+  }
+}
+
+/* =========================
+   DASHBOARD
+========================= */
+function goDashboard() { window.location.href = "dashboard.html"; }
 
 function loadDashboardPage() {
   const assessment = getAssessment();
   const history = JSON.parse(localStorage.getItem("maddadHistory") || "[]");
+  if (!assessment) { window.location.href = "questionnaire.html"; return; }
 
-  if (!assessment) {
-    window.location.href = "questionnaire.html";
-    return;
-  }
-
-  // تحديد الحالة والسكور
-  const risk = assessment.followupComplete
-    ? assessment.finalRisk
-    : assessment.initialRisk;
-
-  const score = assessment.followupComplete
-    ? assessment.finalScore
-    : assessment.initialScore;
-
+  const risk = assessment.followupComplete ? assessment.finalRisk : assessment.initialRisk;
+  const score = assessment.followupComplete ? assessment.finalScore : assessment.initialScore;
   const failed = assessment.failedSkills || [];
 
-  // عناصر الصفحة
-  const skillsCountEl = document.getElementById("skillsCount");
-  const lastScoreEl = document.getElementById("lastScore");
-  const historyCountEl = document.getElementById("historyCount");
+  const el = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
+  el("skillsCount", failed.length);
+  el("lastScore", score ?? 0);
+  el("historyCount", history.length);
 
   const img = document.getElementById("riskImage");
   const title = document.getElementById("riskTitle");
   const desc = document.getElementById("riskDesc");
+  if (img && title && desc) {
+    const map = { low:["../pictures/result-low.png","احتمالية منخفضة","نتيجة مطمئنة مع الاستمرار في المتابعة."], medium:["../pictures/result-medium.png","احتمالية متوسطة","توجد بعض المؤشرات وتحتاج متابعة."] };
+    const r = map[risk] || ["../pictures/result-high.png","احتمالية مرتفعة","يوصى بالمتابعة والتقييم المتخصص."];
+    img.src = r[0]; title.textContent = r[1]; desc.textContent = r[2];
+  }
 
   const skillsList = document.getElementById("skillsList");
+  if (skillsList) skillsList.innerHTML = failed.length === 0 ? "<span>لا توجد مهارات تحتاج متابعة</span>" : failed.map(s => `<span>${skillLabelsArabic[s]||s}</span>`).join("");
+
   const historyList = document.getElementById("historyList");
-  const trendText = document.getElementById("trendText");
-  const chartCanvas = document.getElementById("progressChart");
-
-  // الإحصائيات
-  if (skillsCountEl) skillsCountEl.textContent = failed.length;
-  if (lastScoreEl) lastScoreEl.textContent = score ?? 0;
-  if (historyCountEl) historyCountEl.textContent = history.length;
-
-  // الحالة
-  if (img && title && desc) {
-    if (risk === "low") {
-      img.src = "../pictures/result-low.png";
-      title.textContent = "احتمالية منخفضة";
-      desc.textContent = "نتيجة مطمئنة مع الاستمرار في المتابعة.";
-    } else if (risk === "medium") {
-      img.src = "../pictures/result-medium.png";
-      title.textContent = "احتمالية متوسطة";
-      desc.textContent = "توجد بعض المؤشرات وتحتاج متابعة.";
-    } else {
-      img.src = "../pictures/result-high.png";
-      title.textContent = "احتمالية مرتفعة";
-      desc.textContent = "يوصى بالمتابعة والتقييم المتخصص.";
-    }
-  }
-
-  // المهارات
-  if (skillsList) {
-    if (failed.length === 0) {
-      skillsList.innerHTML = `<span>لا توجد مهارات تحتاج متابعة</span>`;
-    } else {
-      skillsList.innerHTML = failed
-        .map(s => `<span>${skillLabelsArabic[s] || s}</span>`)
-        .join("");
-    }
-  }
-
-  // السجل (آخر 5)
   if (historyList) {
-    if (history.length === 0) {
-      historyList.innerHTML = `<div class="dashboard-empty">لا يوجد سجل تقييمات بعد</div>`;
-    } else {
-      historyList.innerHTML = `
-        <div class="dashboard-history-row dashboard-history-head">
-          <span>التاريخ</span>
-          <span>النتيجة</span>
-          <span>السكور</span>
-        </div>
-
-        ${history.slice(-5).reverse().map(h => `
-          <div class="dashboard-history-row">
-            <span>${h.date || "-"}</span>
-            <span>${h.risk || "-"}</span>
-            <span>${h.score ?? "-"}</span>
-          </div>
-        `).join("")}
-      `;
+    if (history.length === 0) { historyList.innerHTML = `<div class="dashboard-empty">لا يوجد سجل تقييمات بعد</div>`; }
+    else {
+      historyList.innerHTML = `<div class="dashboard-history-row dashboard-history-head"><span>التاريخ</span><span>النتيجة</span><span>السكور</span></div>` +
+        history.slice(-5).reverse().map(h => `<div class="dashboard-history-row"><span>${h.date||"-"}</span><span>${h.risk||"-"}</span><span>${h.score??"-"}</span></div>`).join("");
     }
   }
 
-  // الرسم البياني
   const labels = history.map(h => h.date);
   const data = history.map(h => h.score);
-
+  const chartCanvas = document.getElementById("progressChart");
   if (chartCanvas && typeof Chart !== "undefined" && data.length > 0) {
-    new Chart(chartCanvas, {
-      type: "line",
-      data: {
-        labels,
-        datasets: [{
-          label: "Score",
-          data,
-          borderColor: "#3c5274",
-          backgroundColor: "rgba(60,82,116,0.1)",
-          fill: true,
-          tension: 0.3
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: false }
-        },
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
+    new Chart(chartCanvas, { type:"line", data:{ labels, datasets:[{ label:"Score", data, borderColor:"#3c5274", backgroundColor:"rgba(60,82,116,0.1)", fill:true, tension:0.3 }] }, options:{ responsive:true, plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true } } } });
   }
 
-  // الاتجاه
+  const trendText = document.getElementById("trendText");
   if (trendText && data.length >= 2) {
-    const diff = data[data.length - 1] - data[data.length - 2];
-
-    if (diff < 0) trendText.textContent = "تحسن 👍";
-    else if (diff > 0) trendText.textContent = "تراجع ⚠️";
-    else trendText.textContent = "ثابت";
-  } else if (trendText) {
-    trendText.textContent = "";
-  }
+    const diff = data[data.length-1] - data[data.length-2];
+    trendText.textContent = diff < 0 ? "تحسن 👍" : diff > 0 ? "تراجع ⚠️" : "ثابت";
+  } else if (trendText) trendText.textContent = "";
 }
+
+/* =========================
+   PERMISSIONS PAGE (ولي الأمر)
+========================= */
+async function loadPermissionsPage() {
+  if (localStorage.getItem("maddadLoggedIn") !== "true") { window.location.href = "child-login.html"; return; }
+  
+  // Load from DB and sync to localStorage
+  try {
+    const dbRequests = await apiGetPermissionRequests();
+    const dbPerms = await apiGetPermissions();
+
+    if (Array.isArray(dbRequests)) {
+      const formatted = dbRequests.map(r => ({
+        gameId: r.game_id || r.gameId || "",
+        gameTitle: r.game_title || r.gameTitle || r.game_id || r.gameId || "لعبة",
+        status: r.status || "pending",
+        requestedAt: r.created_at || r.requestedAt || new Date().toISOString()
+      }));
+      localStorage.setItem(getRequestsKey(), JSON.stringify(formatted));
+    }
+
+    if (dbPerms && typeof dbPerms === "object") {
+      // dbPerms is already { game_id: allowed } from apiGetPermissions
+      localStorage.setItem(getPermissionsKey(), JSON.stringify(dbPerms));
+    }
+  } catch (_) {}
+  
+  renderPermissionRequests();
+}
+
+function renderPermissionRequests() {
+  const container = document.getElementById("permissionsContainer");
+  if (!container) return;
+  const requests = JSON.parse(localStorage.getItem(getRequestsKey()) || "[]");
+  const pending = requests.filter(r => r.status === "pending");
+  const decided = requests.filter(r => r.status !== "pending");
+  if (!requests.length) {
+    container.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#888;font-size:16px;">لا توجد طلبات إذن حتى الآن</div>`;
+    return;
+  }
+  let html = "";
+  if (pending.length) {
+    html += `<h2 style="font-size:16px;font-weight:600;color:#3c5274;margin:0 0 14px;padding-bottom:8px;border-bottom:1px solid #e8eef7;">طلبات معلقة (${pending.length})</h2>`;
+    html += pending.map(r => `
+      <div class="perm-card perm-pending">
+        <div class="perm-card-info">
+          <div class="perm-lock-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#3C3489"><path d="M18 10h-1V7A5 5 0 0 0 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2zm-6 7a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3-7H9V7a3 3 0 0 1 6 0v3z"/></svg></div>
+          <div><div class="perm-game-title">${r.gameTitle}</div><div class="perm-date">طُلب في: ${formatPermDate(r.requestedAt)}</div></div>
+        </div>
+        <div class="perm-card-actions">
+          <button class="perm-btn perm-approve" onclick="approvePermission('${r.gameId}')">موافقة</button>
+          <button class="perm-btn perm-reject" onclick="rejectPermission('${r.gameId}')">رفض</button>
+        </div>
+      </div>`).join("");
+  }
+  if (decided.length) {
+    html += `<h2 style="font-size:16px;font-weight:600;color:#888;margin:24px 0 14px;padding-bottom:8px;border-bottom:1px solid #e8eef7;">الطلبات السابقة</h2>`;
+    html += decided.map(r => `
+      <div class="perm-card ${r.status==='approved'?'perm-approved':'perm-rejected'}">
+        <div class="perm-card-info">
+          <div class="perm-lock-icon" style="background:${r.status==='approved'?'#EAF3DE':'#fce8e6'};"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${r.status==='approved'?'#3B6D11':'#c0392b'}" stroke-width="2.5">${r.status==='approved'?'<path d="M20 6L9 17l-5-5"/>':'<path d="M18 6L6 18M6 6l12 12"/>'}</svg></div>
+          <div><div class="perm-game-title">${r.gameTitle}</div><div class="perm-date">${r.status==='approved'?'تمت الموافقة':'تم الرفض'}</div></div>
+        </div>
+        <span class="perm-status-badge ${r.status==='approved'?'badge-approved':'badge-rejected'}">${r.status==='approved'?'مفتوحة':'مرفوضة'}</span>
+      </div>`).join("");
+  }
+  container.innerHTML = html;
+}
+
+async function approvePermission(gameId) {
+  // Save to DB
+  await apiUpdatePermission(gameId, true);
+
+  // Update localStorage
+  let requests = JSON.parse(localStorage.getItem(getRequestsKey()) || "[]");
+  const existing = requests.find(r => r.gameId === gameId);
+  requests = requests.filter(r => r.gameId !== gameId);
+  requests.push({ gameId, gameTitle: existing?.gameTitle || gameId, status: "approved", requestedAt: new Date().toISOString() });
+  localStorage.setItem(getRequestsKey(), JSON.stringify(requests));
+  const permissions = JSON.parse(localStorage.getItem(getPermissionsKey()) || "{}");
+  permissions[gameId] = true;
+  localStorage.setItem(getPermissionsKey(), JSON.stringify(permissions));
+  renderPermissionRequests();
+}
+
+async function rejectPermission(gameId) {
+  // Save to DB
+  await apiUpdatePermission(gameId, false);
+
+  // Update localStorage
+  let requests = JSON.parse(localStorage.getItem(getRequestsKey()) || "[]");
+  const existing = requests.find(r => r.gameId === gameId);
+  requests = requests.filter(r => r.gameId !== gameId);
+  requests.push({ gameId, gameTitle: existing?.gameTitle || gameId, status: "rejected", requestedAt: new Date().toISOString() });
+  localStorage.setItem(getRequestsKey(), JSON.stringify(requests));
+  const permissions = JSON.parse(localStorage.getItem(getPermissionsKey()) || "{}");
+  permissions[gameId] = false;
+  localStorage.setItem(getPermissionsKey(), JSON.stringify(permissions));
+  renderPermissionRequests();
+}
+
+function formatPermDate(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  return d.toLocaleDateString("ar-SA", { day:"numeric", month:"long", hour:"2-digit", minute:"2-digit" });
+}
+
