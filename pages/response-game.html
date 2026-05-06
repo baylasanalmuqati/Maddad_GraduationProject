@@ -3,54 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>مدد | الاستبيان</title>
+  <title>مدد | لعبة الاستجابة للاسم</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body class="questionnaire-page-body" onload="loadQuestionnairePage()">
-
-  <div class="questionnaire-shell">
-
-    <!-- Top Bar -->
-    <header class="questionnaire-topbar">
-      <img src="../pictures/logo.png" alt="شعار مدد" class="questionnaire-top-logo" />
-
-
-      
-      <div class="questionnaire-top-actions">
-        <button class="questionnaire-top-icon-btn logout-icon-btn" onclick="logout()" aria-label="تسجيل الخروج"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
-        <button class="questionnaire-top-icon-btn back-icon-btn" onclick="resetQuestionnaireAndGoHome()" aria-label="العودة">←</button>
-      </div>
-    </header>
-
-    <!-- Main -->
-    <main class="questionnaire-main-wrap">
-      <section class="questionnaire-main-card">
-
-        <h1 class="questionnaire-main-title">استبيان الفحص المبكر لاضطراب طيف التوحد</h1>
-
-        <div class="questionnaire-progress" id="questionProgress">السؤال: 1/10</div>
-
-        <div class="questionnaire-card">
-          <h2 class="questionnaire-question" id="questionTitle">الاستجابة للاسم</h2>
-          <p class="questionnaire-description" id="questionDescription"></p>
-
-          <div class="questionnaire-options" id="questionOptions"></div>
-
-          <p id="questionnaireError" class="questionnaire-error"></p>
-
-          <div class="questionnaire-nav">
-            <button class="questionnaire-nav-btn secondary-btn" id="prevQuestionBtn" onclick="goPrevQuestion()">السابق</button>
-            <button class="questionnaire-nav-btn primary-btn" id="nextQuestionBtn" onclick="goNextQuestion()">التالي</button>
-          </div>
-
-        </div>
-
-      </section>
-    </main>
-
+<body style="background:#F3F8FF; min-height:100vh; display:flex; align-items:center; justify-content:center;">
+  <div style="background:white; padding:40px; border-radius:24px; box-shadow:0 18px 40px rgba(0,0,0,0.08); text-align:center; max-width:700px;">
+    <h1>لعبة الاستجابة للاسم</h1>
+    <p>سيتم لاحقًا ربط هذه الصفحة بلعبة Unity الخاصة بالاستجابة للاسم.</p>
+    <button onclick="window.location.href='games.html'" style="border:none; background:#6F58B4; color:white; border-radius:999px; padding:14px 24px; font-size:18px;">العودة</button>
   </div>
-
-  <script src="api.js"></script>
-  <script src="script.js"></script>
 </body>
 </html>
