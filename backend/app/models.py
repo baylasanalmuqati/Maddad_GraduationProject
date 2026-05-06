@@ -132,3 +132,41 @@ class QuestionnaireResult(Base):
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
 
     user = relationship("User", back_populates="questionnaire_results")
+
+
+# ---------------------------------------------------------------------------
+# email_verifications
+# ---------------------------------------------------------------------------
+
+class EmailVerification(Base):
+    __tablename__ = "email_verifications"
+    id = Column(BigInteger, primary_key=True, index=True)
+    user_id = Column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    token = Column(String(255), unique=True, nullable=False, index=True)
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    verified = Column(Boolean, nullable=False, default=False)
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    user = relationship("User", backref="email_verifications")
+
+
+# ---------------------------------------------------------------------------
+# game_permission_requests + game_permissions
+# ---------------------------------------------------------------------------
+
+class GamePermissionRequest(Base):
+    __tablename__ = "game_permission_requests"
+    id = Column(BigInteger, primary_key=True, index=True)
+    user_id = Column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    game_id = Column(String(100), nullable=False)
+    game_title = Column(String(255), nullable=False)
+    status = Column(String(20), nullable=False, default="pending")
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
+
+class GamePermission(Base):
+    __tablename__ = "game_permissions"
+    id = Column(BigInteger, primary_key=True, index=True)
+    user_id = Column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    game_id = Column(String(100), nullable=False)
+    allowed = Column(Boolean, nullable=False, default=False)
+    updated_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
