@@ -1,5 +1,6 @@
 /**
  * Maddad API Client
+ 
  * =================
  * Thin fetch()-based wrapper around the Maddad FastAPI backend.
  *
