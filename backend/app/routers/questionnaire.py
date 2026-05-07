@@ -57,6 +57,43 @@ def submit_questionnaire(
         )
 
     failed_skills = [k for k, v in answers_dict.items() if v == 1]
+    # =========================
+# ML Monitoring
+# =========================
+
+import csv
+import os
+from datetime import datetime
+
+monitoring_file = "ml_monitoring_logs.csv"
+
+file_exists = os.path.isfile(monitoring_file)
+
+with open(monitoring_file, mode="a", newline="", encoding="utf-8") as file:
+    writer = csv.writer(file)
+
+    if not file_exists:
+        writer.writerow([
+            "timestamp",
+            "user_id",
+            "prediction",
+            "confidence",
+            "score",
+            "failed_skills"
+        ])
+
+    writer.writerow([
+        datetime.now(),
+        current_user.id,
+        ml_risk,
+        round(ml_confidence, 2),
+        score,
+        len(failed_skills)
+    ])
+
+# =========================
+# End Monitoring
+# =========================
 
     followup_needed = ml_risk.lower() in ("medium", "high")
 
