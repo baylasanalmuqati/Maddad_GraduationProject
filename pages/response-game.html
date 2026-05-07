@@ -3,133 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>مدد | نتيجة الاستبيان</title>
+  <title>مدد | لعبة الاستجابة للاسم</title>
   <link rel="stylesheet" href="style.css" />
-  <style>
-    .result-page-body {
-      min-height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      background: #F0F4FC;
-      margin: 0; padding: 0;
-    }
-    .result-shell { display: flex; flex-direction: column; min-height: 100dvh; width: 100%; }
-    .result-topbar {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 20px; height: 68px; background: #fff;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-      position: sticky; top: 0; z-index: 10; flex-shrink: 0;
-    }
-    .result-logo { width: 64px; height: auto; }
-    .result-top-actions { display: flex; gap: 10px; align-items: center; }
-    .result-icon-btn {
-      width: 40px; height: 40px; border: none; border-radius: 50%;
-      background: #F0F4FC; color: #465A78; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; transition: background 0.18s;
-    }
-    .result-icon-btn:hover { background: #dce5f8; }
-    .result-main-wrap {
-      flex: 1; display: flex; align-items: flex-start; justify-content: center;
-      padding: 24px 16px 40px;
-    }
-    .result-main-card {
-      width: 100%; max-width: 680px; background: #fff; border-radius: 24px;
-      padding: 32px 28px 36px; box-shadow: 0 8px 32px rgba(70,90,120,0.10);
-      display: flex; flex-direction: column; align-items: center; gap: 16px;
-    }
-    .result-main-card.low-theme    { border-top: 6px solid #27AE60; }
-    .result-main-card.medium-theme { border-top: 6px solid #F39C12; }
-    .result-main-card.high-theme   { border-top: 6px solid #E74C3C; }
-    .result-image-wrap { width: 100%; display: flex; justify-content: center; }
-    .result-main-icon { width: min(200px, 50vw); height: auto; object-fit: contain; }
-    .result-title {
-      font-size: clamp(17px, 4vw, 23px); font-weight: 800; color: #1F1F27;
-      text-align: center; line-height: 1.7; margin: 0;
-    }
-    .result-text { font-size: 15px; color: #555; text-align: center; line-height: 1.8; margin: 0; }
-    .result-summary { width: 100%; background: #F7F9FE; border-radius: 14px; padding: 16px 18px; }
-    .result-summary-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; margin-bottom: 12px;
-    }
-    .result-summary-label { font-size: 13px; color: #888; font-weight: 600; }
-    .result-summary-val { font-size: 15px; color: #1F1F27; font-weight: 700; }
-    .result-failed-skills { margin-top: 10px; font-size: 14px; color: #333; }
-    .result-skills-list {
-      margin: 8px 0 0; padding: 0; list-style: none;
-      display: flex; flex-wrap: wrap; gap: 6px;
-    }
-    .result-skills-list li {
-      background: #FFE9E9; color: #C0392B; border-radius: 999px;
-      padding: 4px 12px; font-size: 13px; font-weight: 600;
-    }
-    .result-ml-line { margin-top: 10px; font-size: 13px; color: #555; }
-    .medium-reminder-banner, .medium-escalation-banner {
-      width: 100%; border-radius: 14px; padding: 14px 18px;
-      display: flex; align-items: flex-start; gap: 12px; font-size: 14px; line-height: 1.7;
-    }
-    .medium-reminder-banner { background: #FFF8E1; border: 1px solid #F39C12; color: #7a5400; }
-    .medium-escalation-banner { background: #FFECEC; border: 1px solid #E74C3C; color: #8B0000; }
-    .reminder-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
-    .result-btns-wrap { width: 100%; display: flex; flex-direction: column; gap: 12px; margin-top: 4px; }
-    .result-main-btn {
-      width: 100%; padding: 16px; border: none; border-radius: 999px;
-      font-size: 17px; font-weight: 700; font-family: inherit; cursor: pointer;
-      transition: transform 0.18s, box-shadow 0.18s;
-    }
-    .result-main-btn:hover { transform: translateY(-2px); }
-    .btn-green  { background: #27AE60; color: #fff; box-shadow: 0 8px 20px rgba(39,174,96,0.3); }
-    .btn-yellow { background: #F39C12; color: #fff; box-shadow: 0 8px 20px rgba(243,156,18,0.3); }
-    .btn-red    { background: #E74C3C; color: #fff; box-shadow: 0 8px 20px rgba(231,76,60,0.3); }
-    .result-secondary-btn {
-      width: 100%; padding: 14px; border: 2px solid #465A78; border-radius: 999px;
-      background: transparent; color: #465A78; font-size: 16px; font-weight: 600; font-family: inherit; cursor: pointer;
-    }
-    @media (max-width: 480px) {
-      .result-main-card { padding: 22px 14px 26px; border-radius: 18px; }
-      .result-summary-grid { grid-template-columns: 1fr; }
-    }
-  </style>
 </head>
-<body class="result-page-body" onload="loadResultPage()">
-
-  <div class="result-shell">
-
-    <header class="result-topbar">
-      <img src="../pictures/logo.png" class="result-logo" alt="شعار مدد" />
-      <div class="result-top-actions">
-        <button class="result-icon-btn logout-icon-btn" onclick="logout()" aria-label="تسجيل الخروج">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        </button>
-        <button class="result-icon-btn back-icon-btn" onclick="goBackHome()" aria-label="العودة">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-        </button>
-      </div>
-    </header>
-
-    <main class="result-main-wrap">
-      <section class="result-main-card" id="resultMainCard">
-
-        <div class="result-image-wrap">
-          <img id="resultIcon" src="../pictures/result-low.png" alt="نتيجة التقييم" class="result-main-icon" />
-        </div>
-
-        <h1 id="resultTitle" class="result-title">جاري عرض النتيجة...</h1>
-
-        <p id="resultText" class="result-text"></p>
-
-        <div id="resultSummary" class="result-summary"></div>
-
-        <div class="result-btns-wrap" id="resultBtnsWrap">
-          <button id="resultMainBtn" class="result-main-btn" onclick="handleResultMainAction()">متابعة</button>
-          <button id="resultSecondaryBtn" class="result-secondary-btn" onclick="goToDetailedReport()" style="display:none;">تقرير مفصل</button>
-        </div>
-
-      </section>
-    </main>
-
+<body style="background:#F3F8FF; min-height:100vh; display:flex; align-items:center; justify-content:center;">
+  <div style="background:white; padding:40px; border-radius:24px; box-shadow:0 18px 40px rgba(0,0,0,0.08); text-align:center; max-width:700px;">
+    <h1>لعبة الاستجابة للاسم</h1>
+    <p>سيتم لاحقًا ربط هذه الصفحة بلعبة Unity الخاصة بالاستجابة للاسم.</p>
+    <button onclick="window.location.href='games.html'" style="border:none; background:#6F58B4; color:white; border-radius:999px; padding:14px 24px; font-size:18px;">العودة</button>
   </div>
-
-  <script src="api.js"></script>
-  <script src="script.js"></script>
 </body>
 </html>
