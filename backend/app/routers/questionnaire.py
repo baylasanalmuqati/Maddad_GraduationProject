@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models import QuestionnaireResult, User
+from app.models import QuestionnaireResult, User, ModelMonitoringLog
 from app.ml.predictor import predict
 from app.routers.auth import _get_current_user
 from app.schemas import (
@@ -168,3 +168,5 @@ def get_latest_assessment(
 @router.get("/test123")
 def test123():
     return {"msg": "it works"}
+
+
