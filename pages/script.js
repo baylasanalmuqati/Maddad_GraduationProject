@@ -850,7 +850,9 @@ function loadResultPage() {
        </div>`
     : "";
 
-  const mlLine = "";
+  const mlLine = (assessment.mlRisk && assessment.mlConfidence)
+  ? `<div class="result-ml-line">📊 <strong>نسبة ثقة النموذج:</strong> ${Math.round(assessment.mlConfidence * 100)}%</div>`
+  : "";
 
   resultSummary.innerHTML = `
     <div class="result-summary-grid">
