@@ -65,7 +65,7 @@ import csv
 import os
 from datetime import datetime
 
-monitoring_file = "ml_monitoring_logs.csv"
+monitoring_file = "backend/ml_monitoring_logs.csv"
 
 file_exists = os.path.isfile(monitoring_file)
 
