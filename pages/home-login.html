@@ -5,120 +5,89 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>مدد | الرئيسية</title>
   <link rel="stylesheet" href="style.css" />
-  <style>
-    .hl-body { min-height:100vh; background:#F3F8FF; font-family:"Segoe UI",Tahoma,sans-serif; margin:0; }
-    .hl-topbar { width:100%; height:72px; background:rgba(255,255,255,0.92); border-bottom:1px solid #E3E8F2; display:flex; align-items:center; justify-content:space-between; padding:0 28px; box-sizing:border-box; backdrop-filter:blur(6px); direction:ltr; position:sticky; top:0; z-index:10; }
-    .hl-topbar img { height:52px; cursor:pointer; transition:opacity 0.2s; }
-    .hl-topbar img:hover { opacity:0.85; }
-    .hl-topbar-actions { display:flex; gap:10px; align-items:center; }
-    .hl-shell { display:flex; max-width:1200px; margin:0 auto; padding:32px 20px 50px; gap:24px; align-items:flex-start; }
-    .hl-main { flex:1; background:rgba(255,255,255,0.90); border-radius:28px; padding:36px 40px 40px; box-shadow:0 8px 32px rgba(60,82,116,0.09); animation:fadeUp 0.5s ease both; }
-    @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
-    .hl-welcome-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:14px; }
-    .hl-welcome-text h1 { font-size:28px; font-weight:700; color:#1F1F27; margin:0 0 6px; }
-    .hl-welcome-text p { font-size:15px; color:#6b7fa8; margin:0; }
-    .hl-cards-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin-bottom:28px; }
-    .hl-info-card { background:linear-gradient(135deg,rgba(141,162,201,0.10),rgba(216,168,184,0.10)); border:1.5px solid rgba(141,162,201,0.18); border-radius:18px; padding:18px 16px; transition:transform 0.2s,box-shadow 0.2s; }
-    .hl-info-card:hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(60,82,116,0.10); }
-    .hl-info-label { font-size:12px; color:#9aa5bc; margin-bottom:6px; font-weight:600; letter-spacing:0.5px; }
-    .hl-info-value { font-size:17px; font-weight:700; color:#2f3443; word-break:break-all; }
-    .hl-desc { font-size:15px; color:#5a6478; line-height:1.9; margin-bottom:28px; padding:18px 20px; background:rgba(141,162,201,0.07); border-radius:16px; border-right:4px solid #8da2c9; }
-    .hl-btn-wrap { display:flex; justify-content:flex-end; gap:14px; flex-wrap:wrap; }
-    .hl-start-btn { padding:14px 36px; border:none; border-radius:999px; color:#fff; font-size:17px; font-weight:700; cursor:pointer; font-family:inherit; transition:transform 0.2s,box-shadow 0.2s; }
-    .hl-start-btn:hover { transform:translateY(-2px); }
-    @media(max-width:768px) { .hl-shell{flex-direction:column;padding:18px 14px 40px} .hl-main{padding:24px 20px} .hl-welcome-text h1{font-size:22px} .hl-btn-wrap{justify-content:center} }
-  </style>
 </head>
-<body class="hl-body" onload="loadLoginHomePage()">
+<body class="return-home-body" onload="loadLoginHomePage()">
 
-  <header class="hl-topbar">
-    <div class="hl-topbar-actions">
-      <button class="icon-box-btn" onclick="logout()" aria-label="تسجيل الخروج" title="تسجيل الخروج">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
-        </svg>
-      </button>
-      <button class="icon-box-btn" onclick="goSettings()" aria-label="الإعدادات" title="الإعدادات">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-        </svg>
-      </button>
-    </div>
-    <img src="../pictures/logo.png" alt="شعار مدد" onclick="window.location.href='home-login.html'" />
-  </header>
+  <div class="return-home-shell">
 
-  <div class="hl-shell">
+    <!-- Top Bar -->
+    <header class="return-home-topbar">
+      <img src="../pictures/logo.png" class="return-home-top-logo" alt="شعار مدد" />
 
-    <aside class="settings-side-panel">
-      <button class="settings-side-item active" onclick="goBackHome()">
-        <div class="settings-side-icon home-side-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-        <span>الرئيسية</span>
-      </button>
-      <button class="settings-side-item" onclick="window.location.href='games.html'">
-        <div class="settings-side-icon outline-side-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="8" width="20" height="10" rx="4"/><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="15" y1="11" x2="15.01" y2="11"/><line x1="17" y1="13" x2="17.01" y2="13"/><path d="M12 2v6"/></svg></div>
-        <span>مساحة نمو</span>
-      </button>
-      <button class="settings-side-item" onclick="goDashboard()">
-        <div class="settings-side-icon outline-side-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg></div>
-        <span>الأداء</span>
-      </button>
-      <button class="settings-side-item" onclick="goSettings()">
-        <div class="settings-side-icon outline-side-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
-        <span>الإعدادات</span>
-      </button>
-    </aside>
-
-    <section class="hl-main">
-      <div class="hl-welcome-row">
-        <div class="hl-welcome-text">
-          <h1 id="welcomeTitle">أهلاً ولي الأمر</h1>
-          <p id="welcomeSubtitle">يمكنك متابعة بيانات طفلك وبدء الاستبيان من هنا</p>
-        </div>
+      <div class="return-topbar-left">
+        <button class="return-topbar-icon-btn logout-icon-btn" onclick="logout()" aria-label="تسجيل الخروج"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+        <button class="return-topbar-icon-btn settings-icon-btn" onclick="goSettings()" aria-label="الإعدادات">⚙</button>
       </div>
+    </header>
 
-      <div class="hl-cards-row">
-        <div class="hl-info-card">
-          <div class="hl-info-label">اسم الطفل</div>
-          <div class="hl-info-value" id="childNameText">-</div>
-        </div>
-        <div class="hl-info-card">
-          <div class="hl-info-label">العمر</div>
-          <div class="hl-info-value" id="childAgeText">-</div>
-        </div>
-        <div class="hl-info-card">
-          <div class="hl-info-label">الجنس</div>
-          <div class="hl-info-value" id="childGenderText">-</div>
-        </div>
-        <div class="hl-info-card">
-          <div class="hl-info-label">البريد الإلكتروني</div>
-          <div class="hl-info-value" id="emailText">-</div>
-        </div>
-      </div>
+    <!-- Main Layout -->
+    <main class="return-home-main-layout">
 
-      <div class="hl-desc">
-        يمكنك من هنا متابعة بيانات طفلك، البدء بإعادة تعبئة الاستبيان،
-        أو الانتقال إلى مساحة النمو ولوحة الأداء للاطلاع على الأنشطة والنتائج.
-      </div>
-
-      <div class="hl-btn-wrap">
-        <button class="hl-start-btn" onclick="startQuestionnaire()"
-          style="background:#b07898; box-shadow:0 8px 20px rgba(176,120,152,0.25);">
-          ابدأ الاستبيان مرة أخرى
+      <!-- Right Side Panel -->
+      <aside class="return-side-panel">
+        <button class="return-side-item" onclick="goGames()">
+          <div class="return-side-icon filled-icon"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/>
+  <line x1="15" y1="11" x2="15" y2="11"/><line x1="17" y1="13" x2="17" y2="13"/>
+  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" style="display:none"/>
+  <rect x="2" y="8" width="20" height="10" rx="4"/>
+  <path d="M12 2v6"/>
+</svg></div>
+          <span>مساحة نمو</span>
         </button>
-        <button class="hl-start-btn" onclick="window.location.href='child.html'"
-          style="background:#7aaecc; box-shadow:0 8px 20px rgba(122,174,204,0.25);">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
-            style="vertical-align:middle; margin-left:6px;">
-            <rect x="2" y="8" width="20" height="10" rx="4"/>
-            <line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/>
-            <line x1="15" y1="11" x2="15.01" y2="11"/><line x1="17" y1="13" x2="17.01" y2="13"/>
-            <path d="M12 2v6"/>
-          </svg>
-          واجهة الطفل
+
+        <button class="return-side-item" onclick="goDashboard()">
+          <div class="return-side-icon outlined-icon"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+  <polyline points="14 2 14 8 20 8"/>
+  <line x1="16" y1="13" x2="8" y2="13"/>
+  <line x1="16" y1="17" x2="8" y2="17"/>
+  <polyline points="10 9 9 9 8 9"/>
+</svg></div>
+          <span>الأداء</span>
         </button>
-      </div>
-    </section>
+      </aside>
+
+      <!-- Main Content -->
+      <section class="return-home-main-card">
+        <h1 class="return-home-title" id="welcomeTitle">أهلًا ولي أمر</h1>
+
+        <div class="return-home-info-box">
+          <div class="return-info-row">
+            <span class="return-info-label">اسم الطفل:</span>
+            <span class="return-info-value" id="childNameText">-</span>
+          </div>
+
+          <div class="return-info-row">
+            <span class="return-info-label">العمر:</span>
+            <span class="return-info-value" id="childAgeText">-</span>
+          </div>
+
+          <div class="return-info-row">
+            <span class="return-info-label">الجنس:</span>
+            <span class="return-info-value" id="childGenderText">-</span>
+          </div>
+
+          <div class="return-info-row">
+            <span class="return-info-label">البريد الإلكتروني:</span>
+            <span class="return-info-value" id="emailText">-</span>
+          </div>
+        </div>
+
+        <p class="return-home-text">
+          يمكنك من هنا متابعة بيانات طفلك، البدء بإعادة تعبئة الاستبيان، أو الانتقال إلى
+          مساحة النمو ولوحة الأداء للاطلاع على الأنشطة والنتائج.
+        </p>
+
+        <div class="return-home-btn-wrap">
+          <button class="return-home-start-btn" onclick="startQuestionnaire()">
+            ابدأ الاستبيان مرة أخرى
+          </button>
+        </div>
+      </section>
+
+    </main>
+
   </div>
 
   <script src="api.js"></script>
